@@ -117,7 +117,6 @@ class Poker:
         self.playerWin = []
         self.split = [] #stores name strength of every hand of same value of another hand in 1d list
         self.splitted = [] #stores name of easch user with the same hand in a 2d list (useful 1)
-        self.winnerList = []
         self.handStrength()
         self.winStack()
 
@@ -319,8 +318,8 @@ class Game:
         self.tableGroup = tableGroup
         self.table = table
         self.players = playersInGame
-        self.winners = []
         self.order = []
+        self.winnerList = []
         self.turnIndex = self.dealer
         self.better = self.dealer
         self.noOfPlayers = len(self.players)
@@ -539,34 +538,49 @@ class Game:
                 return True
         return False
 
-    def makeWinnerMessage(self, message):
-        for player in self.winners:
-            message += player[1].get_username() + ' won: ' + str(player[0]) + '\n'
-            if self.checkMultiplePlayersIn():
-                for item in self.P.get_playerWin():
-                    for winner in item[0]:
-                        if winner == player[1]:
-                            message += 'Hand: ' + item[0][1] + ' '
-                message += Cards.convert(player[1].get_hand()) + '\n'
-        return message
+    def makeWinnerMessage(self):
+        self.message = '\n------------------------------------------'
+        showHands = []
+        winningIndex = 999
+        startIndex = a = (self.dealer+1)%self.noOfPlayers
+        firstRun = True
+        while a != startIndex or firstRun:
+            firstRun = False
+            for b in range(len(self.P.get_playerWin())):
+                for player in self.P.get_playerWin()[b]:
+                    if self.players[a] in player:
+                        if b <= winningIndex:
+                            winnningIndex = b
+                            moneyWon = 0
+                            for winner in self.winnerList:
+                                if self.players[a] in winner:
+                                    moneyWon = winner[0]
 
-    def makeWinnerList(self):
-        pass
+                            showHands.append(
+                                [   self.players[a].get_username(),
+                                     Cards.convert(self.players[a].get_hand()),
+                                    player[1], #hand strength name
+                                    moneyWon
+                                ]
+                            )
+            a = (a+1)%self.noOfPlayers
+
+
+        for player in showHands:
+            self.message += '\n%s: %s %s'%(player[0], player[2], player[1])
+            if player[3] != 0:
+                self.message += '\nWon %d'%(player[3])
+        self.message += '\n------------------------------------------\n'
 
     def winner(self):
-        message = 'message += --------------------------------------\n'
         playerWinners = []
         moneyGiven = False
         a = 0
         while not moneyGiven:
-            self.winners = []
+            winners = []
             for player in self.P.get_playerWin()[a]:
-                try:
-                    if player[0].get_playerIn():
-                        playerWinners.append(player[0])
-                except TypeError:
-                    print('players left (winner)')
-                    sys.exit()
+                if player[0].get_playerIn():
+                    playerWinners.append(player[0])
             print('playerWinners:', playerWinners)
 
             winnerPrize = 0
@@ -577,28 +591,30 @@ class Game:
                         maxPrize += winner.get_putIn()
                     else:
                         maxPrize += player.get_putIn()
-                self.winners.append([maxPrize, winner])
+                winners.append([maxPrize, winner])
                 winnerPrize += maxPrize
 
             while winnerPrize > self.pot:
-                self.winners.sort(key = lambda x: x[0], reverse=True)
-                self.winners[0][0] -= 1
+                winners.sort(key = lambda x: x[0], reverse=True)
+                winners[0][0] -= 1
                 winnerPrize = 0
-                for item in self.winners:
+                for item in winners:
                     winnerPrize += item[0]
 
             self.pot -= winnerPrize
-            message = self.makeWinnerMessage(message)
+            for winner in winners:
+                self.winnerList.append(winner)
 
             if self.pot == 0:
                 moneyGiven = True
-                message += '--------------------------------------'
-                self.sendMessage(message, self.tableGroup)
             
-            for player in self.winners:
+            for player in winners:
                 player[1].increaseMoney(player[0])
             self.updateDBMoney()
             a+=1
+        
+        self.makeWinnerMessage()
+        self.sendMessage(self.message, self.tableGroup)
 
 
     def play(self):
