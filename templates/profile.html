@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block pageContent %}
+    <p>{{ player.username }}</p>
+    <p>{{ player.money }}</p>
+    {% if user.username == player.username %}
+        <p>settings</p>
+    {% endif %}
+{% endblock %}
