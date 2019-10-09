@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block pageContent %}
+<a id="reset-money" href="{% url 'resetMoney' %}" class="btn btn-info ml-4">Reset money</a>
+{% if user.is_authenticated %}
+    <a class="btn btn-success ml-4" href="{% url 'tableCreateView' %}">Create table</a><br /><br />
+{% endif %}
+<div class="row">
+    {% for table in tables %}
+        <div class="col-md-4">
+            <div class="card mb-2 ml-4" id="{{ table.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ table.name }}</h5>
+                    <p class="card-text">Buyin: {{ table.buyIn }}</p>
+                    <p class="card-text" id="{{ table.name }}-noOfPlayers">Players: {{ table.getNoOfPlayers }}/{{ table.maxNoOfPlayers }}</p>
+                    {% if table.buyIn <= user.money %}
+                        <a href="{% url 'game' pk=table.pk %}"
+                        class="btn btn-primary">
+                            Sit Down
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<script>
+    document.getElementById('reset-money').style.display = "none";
+    {% if user.is_authenticated %}
+        webSocket.onmessage = function(e) {
+            var data = JSON.parse(e.data);
+            var totalMoney = data['money'];
+            var tables = data['tables'];
+            
+            document.getElementById('money').innerHTML = totalMoney;
+            showReset(totalMoney);
+
+            for (i=0; i < tables.length; i++) {
+                console.log(tables)
+                if (tables[i].room != null) {
+                    document.getElementById(tables[i].name + '-noOfPlayers').innerHTML = 
+                    'Players: ' + tables[i].room.noOfPlayers + '/' + tables[i].maxNoOfPlayers;
+                } else {
+                    document.getElementById(tables[i].name + '-noOfPlayers').innerHTML = 
+                    'Players: 0/' + tables[i].maxNoOfPlayers;
+                }
+            }
+
+        }
+    {% endif %}
+
+    function showReset(money) {
+        var resetButton = document.getElementById('reset-money');
+        if (money < 1000) {
+            resetButton.style.display = "block";
+        } else {
+            resetButton.style.display = "none";
+        }
+    }
+</script>
+{% endblock %}

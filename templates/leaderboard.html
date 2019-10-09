@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block pageContent %}
+    <table class="table">
+        <thead>
+            <tr class='clickable-row' data-href='url://'>
+                <th scope="col">#</th>
+                <th scope="col">Username</th>
+                <th scope="col">Money</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for player in users %}
+                <tr onclick="window.location.href = '{% url 'profile' username=player.username %}';">
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ player.username }}</td>
+                    <td>{{ player.money }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
