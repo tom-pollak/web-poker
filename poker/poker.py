@@ -216,7 +216,7 @@ class Poker:
 
         for b in range(len(self.hand)):
             if len(self.hand) > b+1:
-                if self.hand[b][0]+1 == self.hand[b+1][0]:
+                if self.hand[b][0]+1 == self.hand[b+1][0]: #looking for straights
                     count+=1
                 else:
                     count = 0
@@ -226,7 +226,6 @@ class Poker:
                         self.strength = 4
                         self.orderHand = self.hand[b-4:b+1][:]
 
-                    count2 = 0
                     for c in range(4):
                         count2 = 0
                         for item in self.hand[b-4:b+1]:
