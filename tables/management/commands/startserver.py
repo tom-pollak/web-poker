@@ -4,6 +4,7 @@ from django.core.management import call_command
 from tables.models import Table
 from datetime import datetime, timezone
 import time
+import os
 
 class Command(BaseCommand):
     help = 'Calls runserver and cleartables, creates and a daemon thread that removes tables that have been inactive \
@@ -13,6 +14,7 @@ class Command(BaseCommand):
         parser.add_argument('addrport', nargs='?', type=str, default='127.0.0.1:8000', help='ipaddr:port')
 
     def handle(self, *args, **kwargs):
+        #os.system('docker run -p 6379:6379 -d redis:2.8')
         call_command('cleartables')
         addrport = kwargs['addrport']
         thread = threading.Thread(target=self.removeTables, daemon=True)
