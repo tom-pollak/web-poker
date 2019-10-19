@@ -1,0 +1,7 @@
+Function main
+	get Room object for Table
+	add player to Room
+	
+	if Room does not exist
+		create Room object
+		add player to Room

@@ -1,0 +1,15 @@
+Function clash, splitWork
+	splitted <- []
+	win <- [players sorted by hand strength]
+	BinarySort win
+		if items are equal
+			firstItem <- [items]
+			otherItems <- ''
+			splitted += [items]
+
+Function winStack
+	for player in win
+		if player in splitted
+			add splitted players at player position
+			delete all splitted players from list
+			delete splitted[players]
