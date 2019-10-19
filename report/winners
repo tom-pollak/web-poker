@@ -1,0 +1,11 @@
+Function winner
+	a <- 0
+	winners <- []
+	playerWin <- list of players sorted by hand strength
+	while pot != 0
+		for player in playerWin[a]
+			if player has not folded
+				maxPrize <- amount of money the player put in
+				winners += [player, maxPrize]
+		add money from pot equally to each player in winners up to their maxPrize
+		a+=1

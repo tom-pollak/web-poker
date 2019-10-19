@@ -1,0 +1,6 @@
+@login_required
+Function game
+	if users money >= tables buy in and players in table < max players in table
+		start daemon thread on poker main function
+		return game.html render
+	return redirect index
