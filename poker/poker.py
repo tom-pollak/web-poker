@@ -107,9 +107,9 @@ class Cards:
 
 
 class Poker:
-    def __init__(self, players, comCards):  #includes comCards from Cards object
-        self.comCards = comCards #stores the variable in new place instead of getting it could get given the Cards object instead?
+    def __init__(self, players, C):
         self.players = players
+        self.C = C
         self.strengthList = ['High Card', 'Pair', 'Two Pair',\
         'Three of a kind', 'Straight', 'Flush', 'Full House', 'Four of a kind',\
         'Straight Flush', 'Royal Flush']
@@ -126,7 +126,7 @@ class Poker:
     def handStrength(self):
         for player in self.players:
             self.orderHand = []
-            self.hand = player.get_hand() + self.comCards #only comCards uses here
+            self.hand = player.get_hand() + self.C.get_comCards() #only comCards uses here
             self.hand.sort(reverse=True)
             self.pairThree()
             self.straightFlush()
@@ -170,7 +170,7 @@ class Poker:
                     hand[a] = ''
 
         pairIndex.sort(reverse=True)
-        for item in pairIndex:
+        for item in pairIndex: #dosent stop at 2 pairs??
             self.orderHand.append(hand[item[1]][:])
             hand[item[1]] = ''
 
@@ -209,9 +209,8 @@ class Poker:
                         self.orderHand.append(item[:])
         count = 0
 
-        added = False
         for item in self.hand:
-            if 14 in item and not added:
+            if 14 in item:
                 self.hand.append([1, item[1]])
 
         for b in range(len(self.hand)):
@@ -236,7 +235,7 @@ class Poker:
                             self.strength = 8
                             self.orderHand = self.hand[b-4:b+1][:]
 
-        if self.strength == 8 and self.hand[0][0] == 14:
+        if self.strength == 8 and self.orderHand[0][0] == 14:
             self.strength = 9
 
     def clash(self): #binary sort with abit of splitting if the values are the same
@@ -329,7 +328,7 @@ class Game:
     
     def instantiateCardsPoker(self):
         self.C = Cards(self.players)
-        self.P = Poker(self.players, self.C.get_comCards())
+        self.P = Poker(self.players, self.C)
 
     def makeComCards(self):
         if self.comCount == 0:
@@ -547,21 +546,20 @@ class Game:
             firstRun = False
             for b in range(len(self.P.get_playerWin())):
                 for player in self.P.get_playerWin()[b]:
-                    if self.players[a] in player:
-                        if b <= winningIndex:
-                            winnningIndex = b
-                            moneyWon = 0
-                            for winner in self.winnerList:
-                                if self.players[a] in winner:
-                                    moneyWon = winner[0]
+                    if self.players[a] in player and b <= winningIndex:
+                        winnningIndex = b
+                        moneyWon = 0
+                        for winner in self.winnerList:
+                            if self.players[a] in winner:
+                                moneyWon = winner[0]
 
-                            showHands.append(
-                                [   self.players[a].get_username(),
-                                     Cards.convert(self.players[a].get_hand()),
-                                    player[1], #hand strength name
-                                    moneyWon
-                                ]
-                            )
+                        showHands.append(
+                            [   self.players[a].get_username(),
+                                    Cards.convert(self.players[a].get_hand()),
+                                player[1], #hand strength name
+                                moneyWon
+                            ]
+                        )
             a = (a+1)%self.noOfPlayers
 
 
@@ -573,9 +571,8 @@ class Game:
 
     def winner(self):
         playerWinners = []
-        moneyGiven = False
         a = 0
-        while not moneyGiven:
+        while self.pot != 0:
             winners = []
             for player in self.P.get_playerWin()[a]:
                 if player[0].get_playerIn():
@@ -603,9 +600,6 @@ class Game:
             self.pot -= winnerPrize
             for winner in winners:
                 self.winnerList.append(winner)
-
-            if self.pot == 0:
-                moneyGiven = True
             
             for player in winners:
                 player[1].increaseMoney(player[0])
