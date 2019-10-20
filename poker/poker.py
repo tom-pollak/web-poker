@@ -126,7 +126,7 @@ class Poker:
     def handStrength(self):
         for player in self.players:
             self.orderHand = []
-            self.hand = player.get_hand() + self.C.get_comCards() #only comCards uses here
+            self.hand = player.get_hand() + self.C.get_comCards()
             self.hand.sort(reverse=True)
             self.pairThree()
             self.straightFlush()
