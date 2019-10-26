@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from tables.models import Table
 from poker.models import Room
 import json
@@ -8,8 +8,7 @@ from django.contrib.auth.decorators import login_required
 
 @login_required
 def game(request, pk):
-    table = Table.objects.get(pk=pk)
-    tableGroup = 'table_' + str(pk)
+    table = get_object_or_404(Table, pk=pk)
     if request.user.money >= table.buyIn and table.getNoOfPlayers() < table.maxNoOfPlayers:
         pokerThread = threading.Thread(target=main, args=(pk, request.user.username), daemon=True)
         pokerThread.start()
