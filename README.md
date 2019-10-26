@@ -3,11 +3,11 @@ django poker web-app
 prerequisites: docker, python 3.x, pip, git
 
 Installation  
-pip install pipenv  
-git clone https://github.com/ZY-KY/web_poker.git  
-cd web_poker  
-pipenv install -r requirements.txt  
-mv project/settings_git.py project/settings.py  
+> pip install pipenv  
+> git clone https://github.com/ZY-KY/web_poker.git  
+> cd web_poker  
+> pipenv install -r requirements.txt  
+> mv project/settings_git.py project/settings.py  
 
 > python manage.py shell  
 > from django.core.management.utils import get_random_secret_key  
