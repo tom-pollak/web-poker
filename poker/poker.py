@@ -617,8 +617,8 @@ class Game:
             firstRun = True
             if a == 0:
                 self.blinds()
+            self.makeComCards()
             if self.checkMultiplePlayersIn():
-                self.makeComCards()
                 print('turnIndex:', self.turnIndex, end="")
                 print(' |  better:', self.better)
                 while (self.turnIndex != self.better or firstRun):
@@ -672,7 +672,7 @@ def startGame(table, tableGroup):
             game.game = False
             game.save()
             dealer +=1
-            time.sleep(1)
+        time.sleep(1)
 
 def main(pk, username):
     table = Table.objects.get(pk=pk)
