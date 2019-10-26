@@ -8,6 +8,10 @@ from accounts.models import CustomUser
 import sys
 from datetime import datetime, timezone
 
+#TODO
+#somebody posted bb and sb?? unreproducable
+#re buy in
+
 class Player:
     def __init__(self, username, money):
         self.username = username
@@ -372,13 +376,18 @@ class Game:
             userInstance = CustomUser.objects.get(username=player)
             self.player = Players.objects.get(user_id=userInstance.id)
         except Players.DoesNotExist:
-            try:
-                self.game = Room.objects.get(groupName=self.tableGroup)
-            except Room.DoesNotExist:
-                print('everyone left (getPlayer)') #untested
-                sys.exit()
+            self.getRoom()
             return False
         return True
+
+    def getRoom(self):
+        try:
+            self.game = Room.objects.get(groupName=self.tableGroup)
+        except Room.DoesNotExist:
+            print('everyone left')
+            self.table.lastUsed = datetime.now(timezone.utc)
+            self.table.save()
+            sys.exit()
 
     def blinds(self):
         sb = self.addRaiseAmount(self.minimumBet)
@@ -418,8 +427,7 @@ class Game:
 
         playerLeft = False
         while self.game.action is None and not playerLeft:
-            try:
-                self.game.refresh_from_db()
+            self.getRoom()
                 if self.game.noOfPlayers == 1: #everyone leaves while its your turn
                     self.game.action = 'c'
                     self.game.save()
@@ -436,12 +444,6 @@ class Game:
                             self.sendMessage('Raise amount must be a positive integer', self.turn.get_username())
                             self.makeTurn()
 
-            except Room.DoesNotExist:
-                print('everyone left (getChoice)')
-                self.table.lastUsed = datetime.now(timezone.utc)
-                self.table.save()
-                sys.exit()
-
             if not self.getPlayer(self.turn):
                 self.choice = 'f'
                 playerLeft = True
@@ -451,14 +453,7 @@ class Game:
         self.game.save()
 
     def makeTurn(self):
-        try:
-            self.game = Room.objects.get(groupName=self.tableGroup)
-        except Room.DoesNotExist:
-            print('everyone left (makeTurn)')
-            self.table.lastUsed = datetime.now(timezone.utc)
-            self.table.save()
-            sys.exit()
-
+        self.getRoom()
         if self.getPlayer(self.turn):
             self.player.turn = True
             self.player.save()
@@ -561,7 +556,6 @@ class Game:
                             ]
                         )
             a = (a+1)%self.noOfPlayers
-
 
         for player in showHands:
             winnings = ''
@@ -666,14 +660,10 @@ def startGame(table, tableGroup):
             table.save()
             sys.exit()
 
-        if not game.game and len(playersInGame) > 1:
+        if len(playersInGame) > 1:
             time.sleep(0.2)
-            game.game = True
-            game.save()
             print('game started')
             Game((table.buyIn)//100, dealer, tableGroup, table, playersInGame)
-            game.game = False
-            game.save()
             dealer +=1
         time.sleep(1)
 
