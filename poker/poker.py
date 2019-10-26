@@ -547,7 +547,7 @@ class Game:
             for b in range(len(self.P.get_playerWin())):
                 for player in self.P.get_playerWin()[b]:
                     if self.players[a] in player and b <= winningIndex:
-                        winnningIndex = b
+                        winningIndex = b
                         moneyWon = 0
                         for winner in self.winnerList:
                             if self.players[a] in winner:
@@ -564,9 +564,12 @@ class Game:
 
 
         for player in showHands:
-            self.message += '\n%s: %s %s'%(player[0], player[2], player[1])
+            winnings = ''
             if player[3] != 0:
-                self.message += '\nWon %d'%(player[3])
+                winnings = 'won ' + str(player[3])
+
+            self.message += '\n%s %s: %s %s'%(player[0], winnings, player[2], player[1])
+
         self.message += '\n------------------------------------------\n'
 
     def winner(self):
