@@ -10,11 +10,13 @@ pipenv install -r requirements.txt
 mv project/settings_git.py project/settings.py
 
 python manage.py shell
-from django.core.management.utils import get_random_secret_key
-get_random_secret_key()
+>> from django.core.management.utils import get_random_secret_key
+>> get_random_secret_key()
 copy that to SECRET_KEY = '<string>' in settings.py
 
 docker run -p 6379:6379 -d redis:2.8
+python manage.py migrate
+python manage.py createsuperuser - optional
 ----------------------------------------------
 
 to start dev server - takes same parameters as runserver
