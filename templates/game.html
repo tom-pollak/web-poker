@@ -66,6 +66,7 @@
 
     console.log('js working');
     var pk = {{ table.pk }};
+    hideButton('buttons')
 
     var pokerSocket = new WebSocket(
         'ws://' + window.location.host +

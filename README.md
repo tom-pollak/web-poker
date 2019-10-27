@@ -1,5 +1,5 @@
 # web_poker
-django poker web-app
+django poker web-app  
 prerequisites: docker, python 3.x, pip, git
 
 Installation  
