@@ -26,9 +26,11 @@ class MoneyConsumer(WebsocketConsumer):
         while True:
             self.player = CustomUser.objects.get(username=self.username)
             self.totalMoney = self.player.money
+            self.moneyInTable = 0
             try:
                 self.playerGame = Players.objects.get(pk=self.player)
-                self.totalMoney += self.playerGame.moneyInTable
+                self.moneyInTable = self.playerGame.moneyInTable
+                self.totalMoney += self.moneyInTable
 
             except Players.DoesNotExist:
                 pass
@@ -39,6 +41,7 @@ class MoneyConsumer(WebsocketConsumer):
             
             self.send(text_data=json.dumps({
                 'money': self.totalMoney,
+                'moneyInTable': self.moneyInTable,
                 'tables': json.loads(self.tableJSON),
             }))
             time.sleep(1)
