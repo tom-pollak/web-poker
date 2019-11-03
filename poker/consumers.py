@@ -9,7 +9,6 @@ import json
 class PokerConsumer(WebsocketConsumer):
     def connect(self):
         self.pk = self.scope['url_route']['kwargs']['pk']
-        self.pk = str(self.pk)
         self.player = self.scope['user']
         self.username = self.player.username
         p = self.scope['user']
