@@ -428,21 +428,21 @@ class Game:
         playerLeft = False
         while self.game.action is None and not playerLeft:
             self.getRoom()
-                if self.game.noOfPlayers == 1: #everyone leaves while its your turn
-                    self.game.action = 'c'
-                    self.game.save()
-                    self.choice = 'c'
+            if self.game.noOfPlayers == 1: #everyone leaves while its your turn
+                self.game.action = 'c'
+                self.game.save()
+                self.choice = 'c'
 
-                elif self.game.action is not None:
-                    self.choice = self.game.action[0] #the first character is the action the user wants to take after that it is the optional raiseAmount
-                    if self.choice == 'r':
-                        try:
-                            self.raiseAmount = self.game.action[1:]
-                            if not int(self.raiseAmount) > 0:
-                                raise ValueError()
-                        except ValueError:
-                            self.sendMessage('Raise amount must be a positive integer', self.turn.get_username())
-                            self.makeTurn()
+            elif self.game.action is not None:
+                self.choice = self.game.action[0] #the first character is the action the user wants to take after that it is the optional raiseAmount
+                if self.choice == 'r':
+                    try:
+                        self.raiseAmount = self.game.action[1:]
+                        if not int(self.raiseAmount) > 0:
+                            raise ValueError()
+                    except ValueError:
+                        self.sendMessage('Raise amount must be a positive integer', self.turn.get_username())
+                        self.makeTurn()
 
             if not self.getPlayer(self.turn):
                 self.choice = 'f'
