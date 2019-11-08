@@ -535,27 +535,27 @@ class Game:
         self.message = '\n------------------------------------------'
         showHands = []
         winningIndex = 999
-        startIndex = a = (self.dealer+1)%self.noOfPlayers
+        startIndex = currentIndex = (self.dealer+1)%self.noOfPlayers
         firstRun = True
-        while a != startIndex or firstRun:
+        while currentIndex != startIndex or firstRun:
             firstRun = False
-            for b in range(len(self.P.get_playerWin())):
-                for player in self.P.get_playerWin()[b]:
-                    if self.players[a] in player and b <= winningIndex:
-                        winningIndex = b
+            for a in range(len(self.P.get_playerWin())):
+                for player in self.P.get_playerWin()[a]:
+                    if self.players[currentIndex] in player and a <= winningIndex and not player.get_playerIn():
+                        winningIndex = a
                         moneyWon = 0
                         for winner in self.winnerList:
-                            if self.players[a] in winner:
+                            if self.players[currentIndex] in winner:
                                 moneyWon = winner[0]
 
                         showHands.append(
-                            [   self.players[a].get_username(),
-                                    Cards.convert(self.players[a].get_hand()),
+                            [   self.players[currentIndex].get_username(),
+                                Cards.convert(self.players[a].get_hand()),
                                 player[1], #hand strength name
                                 moneyWon
                             ]
                         )
-            a = (a+1)%self.noOfPlayers
+            currentIndex = (currentIndex+1)%self.noOfPlayers
 
         for player in showHands:
             winnings = ''
