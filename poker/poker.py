@@ -14,80 +14,92 @@ from datetime import datetime, timezone
 
 class Player:
     def __init__(self, username, money):
-        self.username = username
-        self.money = money
-        self.hand = []
-        self.playerIn = True
-        self.putIn = 0
-        self.callAmount = 0
+        self.__username = username
+        self.__money = money
+        self.__hand = []
+        self.__playerIn = True
+        self.__putIn = 0
+        self.__callAmount = 0
 
-    def get_username(self):
-        return self.username
+    @property
+    def username(self):
+        return self.__username
     
-    def get_money(self):
-        return self.money
+    @property
+    def money(self):
+        return self.__money
     
     def increaseMoney(self, increaseAmount):
-        self.money += increaseAmount
+        self.__money += increaseAmount
     
-    def get_callAmount(self):
-        return self.callAmount
+    @property
+    def callAmount(self):
+        return self.__callAmount
 
-    def make_hand(self, hand):
-        self.hand = hand
-    
-    def get_hand(self):
-        return self.hand
+    @callAmount.setter
+    def callAmount(self, callAmount):
+        self.__callAmount = callAmount
 
-    def get_playerIn(self):
-        return self.playerIn
-    
+    @property
+    def hand(self):
+        return self.__hand
+
+    @hand.setter
+    def hand(self, hand):
+        self.__hand = hand
+
+    @property
+    def playerIn(self):
+        return self.__playerIn
+
+    @property
+    def putIn(self):
+        return self.__putIn
+
     def fold(self):
-        self.playerIn = False
-
-    def get_putIn(self):
-        return self.putIn
+        self.__playerIn = False
 
     def call(self, moneyToPutIn):
-        if self.money > moneyToPutIn:
-            self.money -= moneyToPutIn
+        if self.__money > moneyToPutIn:
+            self.__money -= moneyToPutIn
 
         else: #all-in situation
-            moneyToPutIn = self.money
-            self.money = 0
+            moneyToPutIn = self.__money
+            self.__money = 0
 
         if moneyToPutIn == 0:
             print('no money put in')
 
-        self.putIn += moneyToPutIn
-        self.callAmount = 0
+        self.__putIn += moneyToPutIn
+        self.__callAmount = 0
         return moneyToPutIn
 
 class Cards:
     def __init__(self, players):
-        self.players = players
-        self.noOfPlayers = len(self.players)
-        self.playerHands = []
-        self.deck = []
-        self.comCards = []
+        self.__players = players
+        self.__noOfPlayers = len(self.__players)
+        self.__playerHands = []
+        self.__deck = []
+        self.__comCards = []
         self.makeDeck()
         self.hands()
 
     def makeDeck(self):
-        self.deck = [[k, j] for j in range(4) for k in range(2,15)]
+        self.__deck = [[k, j] for j in range(4) for k in range(2,15)]
 
     def hands(self):
-        random.shuffle(self.deck)
-        self.comCards = self.deck[:5][:]
-        del self.deck[:5]
-        for player in self.players:
+        random.shuffle(self.__deck)
+        self.__comCards = self.__deck[:5][:]
+        del self.__deck[:5]
+        for player in self.__players:
             playerHand = []
-            playerHand = self.deck[:2][:]
-            del self.deck[:2]
-            player.make_hand(playerHand)
+            playerHand = self.__deck[:2][:]
+            del self.__deck[:2]
+            player.hand = playerHand
 
-    def get_comCards(self):
-        return self.comCards
+    @property
+    def comCards(self):
+        return self.__comCards
 
     def convert(hand):
         numbers = [[11, 'J'], [12, 'Q'], [13, 'K'], [14, 'A'], [1, 'A']]
@@ -102,7 +114,7 @@ class Cards:
                     add = True
 
             if not add:
-                convertHand+= str(hand[a][0])
+                convertHand += str(hand[a][0])
 
             for b in range(4):
                 if hand[a][1] == b:
@@ -118,19 +130,23 @@ class Poker:
         'Three of a kind', 'Straight', 'Flush', 'Full House', 'Four of a kind',\
         'Straight Flush', 'Royal Flush']
         self.win = []
-        self.playerWin = []
+        self.__playerWin = []
         self.split = [] #stores name strength of every hand of same value of another hand in 1d list
         self.splitted = [] #stores name of easch user with the same hand in a 2d list (useful 1)
         self.handStrength()
         self.winStack()
-
-    def get_playerWin(self):
-        return self.playerWin
+    @property
+    def playerWin(self):
+        return self.__playerWin
+    
+    @playerWin.setter
+    def playerWin(self, playerWin):
+        self.__playerWin = playerWin
 
     def handStrength(self):
         for player in self.players:
             self.orderHand = []
-            self.hand = player.get_hand() + self.C.get_comCards()
+            self.hand = player.hand + self.C.comCards
             self.hand.sort(reverse=True)
             self.pairThree()
             self.straightFlush()
@@ -340,15 +356,15 @@ class Game:
             message = ''
 
         if self.comCount == 1:
-            self.comCards = Cards.convert(self.C.get_comCards()[:3])
+            self.comCards = Cards.convert(self.C.comCards[:3])
             message = 'Flop: '
 
         elif self.comCount == 2:
-            self.comCards = Cards.convert(self.C.get_comCards()[:4])
+            self.comCards = Cards.convert(self.C.comCards[:4])
             message = 'Turn: '
 
         elif self.comCount == 3:
-            self.comCards = Cards.convert(self.C.get_comCards()[:])
+            self.comCards = Cards.convert(self.C.comCards[:])
             message = 'River: '
         
         message += self.comCards
@@ -372,8 +388,7 @@ class Game:
 
     def getPlayer(self, player):
         try:
-            player = player.get_username()
-            userInstance = CustomUser.objects.get(username=player)
+            userInstance = CustomUser.objects.get(username=player.username)
             self.player = Players.objects.get(user_id=userInstance.id)
         except Players.DoesNotExist:
             self.getRoom()
@@ -394,31 +409,31 @@ class Game:
         self.nextTurn()
         bb = self.addRaiseAmount(self.minimumBet)
         self.nextTurn()
-        message = self.turn.get_username() + ' posted BB (' + str(bb + sb) + ')\n'
-        message += self.turn.get_username() + ' posted SB (' + str(sb) + ')'
+        message = self.turn.username + ' posted BB (' + str(bb + sb) + ')\n'
+        message += self.turn.username + ' posted SB (' + str(sb) + ')'
         self.sendMessage(message, self.tableGroup)
         
     def sendCards(self):
         for player in self.players:
-            if player.get_playerIn():
+            if player.playerIn:
                 self.getPlayer(player)
-                hand = Cards.convert(player.get_hand())
+                hand = Cards.convert(player.hand)
                 async_to_sync(get_channel_layer().group_send)(
-                    player.get_username(),
+                    player.username,
                     {
                         'type': 'cards',
                         'hand': hand,
                         'comCards': self.comCards,
                         'dealer': self.dealer,
-                        'moneyInTable': str(player.get_money())
+                        'moneyInTable': str(player.money)
 
                     }
                 )
 
     def getChoice(self):
-        putIn = str(self.turn.get_callAmount())
+        putIn = str(self.turn.callAmount)
         async_to_sync(get_channel_layer().group_send)(
-            self.turn.get_username(),
+            self.turn.username,
             {
                 'type': 'playerTurn',
                 'putIn': putIn,
@@ -441,13 +456,13 @@ class Game:
                         if not int(self.raiseAmount) > 0:
                             raise ValueError()
                     except ValueError:
-                        self.sendMessage('Raise amount must be a positive integer', self.turn.get_username())
+                        self.sendMessage('Raise amount must be a positive integer', self.turn.username)
                         self.makeTurn()
 
             if not self.getPlayer(self.turn):
                 self.choice = 'f'
                 playerLeft = True
-                print(self.turn.get_username(), 'left')
+                print(self.turn.username, 'left')
 
         self.game.action = None
         self.game.save()
@@ -465,7 +480,7 @@ class Game:
     def makeChoice(self):
         money = 0
         if self.choice == 'c':
-            money = self.turn.call(self.turn.get_callAmount())
+            money = self.turn.call(self.turn.callAmount)
             self.pot += money
 
         elif self.choice == 'r':
@@ -478,7 +493,7 @@ class Game:
 
     def addRaiseAmount(self, raiseAmount):
         self.better = self.turnIndex
-        callAmount = self.turn.call(self.turn.get_callAmount())
+        callAmount = self.turn.call(self.turn.callAmount)
         raiseAmount = self.turn.call(raiseAmount)
         self.pot += (raiseAmount + callAmount)
 
@@ -490,24 +505,24 @@ class Game:
     def updateDBMoney(self):
         for player in self.players:
             if self.getPlayer(player):
-                self.player.moneyInTable = player.get_money()
+                self.player.moneyInTable = player.money
                 self.player.save()
 
     def makeMessage(self, money):
         if self.choice == 'f':
-            message = self.turn.get_username() + ' folded'
+            message = self.turn.username + ' folded'
 
         elif self.choice == 'r':
-            if self.turn.get_money() == 0:
-                message = self.turn.get_username() + ' went all-in'
+            if self.turn.money == 0:
+                message = self.turn.username + ' went all-in'
             else:
-                message = self.turn.get_username() + ' raised ' +  str(money)
+                message = self.turn.username + ' raised ' +  str(money)
 
         if self.choice == 'c':
             if money == 0:
-                message = self.turn.get_username() + ' checked'
+                message = self.turn.username + ' checked'
             else:
-                message = self.turn.get_username() + ' called ' + str(money)
+                message = self.turn.username + ' called ' + str(money)
 
         self.sendMessage(message, self.tableGroup)
     
@@ -524,12 +539,12 @@ class Game:
     def checkMultiplePlayersIn(self):
         count = 0
         for player in self.players:
-            if player.get_playerIn() and player.get_money() > 0:
+            if player.playerIn and player.money > 0:
                 count+=1
         if count > 1:
             if self.table.getNoOfPlayers() > 1:
-                return True
-        return False
+                return (True, count)
+        return (False, count)
 
     def makeWinnerMessage(self):
         self.message = '\n------------------------------------------'
@@ -537,32 +552,43 @@ class Game:
         winningIndex = 999
         startIndex = currentIndex = (self.dealer+1)%self.noOfPlayers
         firstRun = True
+        noOfPlayersIn = self.checkMultiplePlayersIn()[1]
         while currentIndex != startIndex or firstRun:
             firstRun = False
-            for a in range(len(self.P.get_playerWin())):
-                for player in self.P.get_playerWin()[a]:
-                    if self.players[currentIndex] in player and a <= winningIndex and not player.get_playerIn():
+            for a in range(len(self.P.playerWin)):
+                for player in self.P.playerWin[a]:
+                    print(player)
+                    if self.players[currentIndex] in player and a <= winningIndex and self.players[currentIndex].playerIn:
+                        print('got here')
                         winningIndex = a
                         moneyWon = 0
                         for winner in self.winnerList:
                             if self.players[currentIndex] in winner:
                                 moneyWon = winner[0]
 
-                        showHands.append(
-                            [   self.players[currentIndex].get_username(),
-                                Cards.convert(self.players[a].get_hand()),
-                                player[1], #hand strength name
-                                moneyWon
-                            ]
-                        )
+                            playerStats = {
+                                'username': self.players[currentIndex].username,
+                                'moneyWon': moneyWon
+                            }
+
+                            if noOfPlayersIn > 1:
+                                playerStats['hand'] = Cards.convert(self.players[a].hand)
+                                playerStats ['strength'] = ': ' + player[1] #hand strength name
+                            else:
+                                playerStats['hand'] = ''
+                                playerStats ['strength'] =  ''
+
+                        showHands.append(playerStats)
             currentIndex = (currentIndex+1)%self.noOfPlayers
 
+        print(showHands)
         for player in showHands:
+            print(player)
             winnings = ''
-            if player[3] != 0:
-                winnings = 'won ' + str(player[3])
+            if player['moneyWon'] != 0:
+                winnings = ' won ' + str(player['moneyWon'])
 
-            self.message += '\n%s %s: %s %s'%(player[0], winnings, player[2], player[1])
+            self.message += '\n' + player['username'] + winnings + player['strength'] + player['hand']
 
         self.message += '\n------------------------------------------\n'
 
@@ -571,8 +597,8 @@ class Game:
         a = 0
         while self.pot != 0:
             winners = []
-            for player in self.P.get_playerWin()[a]:
-                if player[0].get_playerIn():
+            for player in self.P.playerWin[a]:
+                if player[0].playerIn:
                     playerWinners.append(player[0])
             print('playerWinners:', playerWinners)
 
@@ -580,10 +606,10 @@ class Game:
             for winner in playerWinners:
                 maxPrize = 0
                 for player in self.players:
-                    if player.get_putIn() > winner.get_putIn():
-                        maxPrize += winner.get_putIn()
+                    if player.putIn > winner.putIn:
+                        maxPrize += winner.putIn
                     else:
-                        maxPrize += player.get_putIn()
+                        maxPrize += player.putIn
                 winners.append([maxPrize, winner])
                 winnerPrize += maxPrize
 
@@ -602,7 +628,6 @@ class Game:
                 player[1].increaseMoney(player[0])
             self.updateDBMoney()
             a+=1
-        
         self.makeWinnerMessage()
         self.sendMessage(self.message, self.tableGroup)
 
@@ -615,7 +640,7 @@ class Game:
             if a == 0:
                 self.blinds()
             self.makeComCards()
-            if self.checkMultiplePlayersIn():
+            if self.checkMultiplePlayersIn()[0]:
                 print('turnIndex:', self.turnIndex, end="")
                 print(' |  better:', self.better)
                 while (self.turnIndex != self.better or firstRun):
@@ -623,7 +648,7 @@ class Game:
                     self.sendCards()
                     print('players:', self.players)
                     firstRun = False
-                    if self.turn.get_money() != 0 and self.turn.get_playerIn():
+                    if self.turn.money != 0 and self.turn.playerIn:
                         self.makeTurn()
                         self.makeChoice()
                     self.nextTurn()
