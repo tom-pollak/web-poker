@@ -18,8 +18,9 @@ class Player:
         self.__money = money
         self.__hand = []
         self.__playerIn = True
-        self.__putIn = 0
-        self.__callAmount = 0
+        self.__callAmount = self.__putIn = 0
+        self.__handStrength = ''
+        self.__moneyWon = 0
 
     @property
     def username(self):
@@ -31,6 +32,7 @@ class Player:
     
     def increaseMoney(self, increaseAmount):
         self.__money += increaseAmount
+        self.__moneyWon += increaseAmount
     
     @property
     def callAmount(self):
@@ -55,6 +57,24 @@ class Player:
     @property
     def putIn(self):
         return self.__putIn
+    
+    @property
+    def handStrength(self):
+        return self.__handStrength
+    
+    @handStrength.setter
+    def handStrength(self, strength):
+        self.__handStrength = strength
+    
+    @property
+    def moneyWon(self):
+        return self.__moneyWon
+
+    def decreasePutIn(self, amount):
+        if amount <= self.__putIn:
+            self.__putIn -= amount
+        else:
+            raise Exception('amount to decrease putIn by was greater than putIn.')
 
     def fold(self):
         self.__playerIn = False
@@ -150,6 +170,7 @@ class Poker:
             self.hand.sort(reverse=True)
             self.pairThree()
             self.straightFlush()
+            player.handStrength = self.strengthList[self.strength]
             self.win.append([self.strength, player, self.orderHand[:]])
         self.win.sort(key = lambda x: x[0], reverse=True)
         self.clash()
@@ -160,6 +181,7 @@ class Poker:
         pair = 0
         three = False
         pairIndex = []
+        threeIndex = []
         self.strength = 0
 
         for a in range(7):
@@ -176,18 +198,22 @@ class Poker:
                 pair+=1
                 pairIndex.append([countList[a][1][0], a])
 
-            if countList[a][0] == 3:
+            elif countList[a][0] == 3:
                 three = True
                 if self.strength <= 3:
                     self.strength = 3
-                    self.orderHand = [hand[a][:]] + self.orderHand
+                    threeIndex.append(hand[a][:])
+                    #self.orderHand = [hand[a][:]] + self.orderHand
                     hand[a] = ''
 
-            if countList[a][0] == 4:
+            elif countList[a][0] == 4:
                 if self.strength <= 7:
                     self.strength = 7
                     self.orderHand = [hand[a][:]] + self.orderHand
                     hand[a] = ''
+
+        for three in threeIndex:
+            self.orderHand.append(three)
 
         pairIndex.sort(reverse=True)
         for item in pairIndex: #dosent stop at 2 pairs??
@@ -259,9 +285,9 @@ class Poker:
             self.strength = 9
 
     def clash(self): #binary sort with abit of splitting if the values are the same
+        repeated = []
         flip = True
-        count = 0
-        while flip and count <= len(self.win):
+        while flip:
             flip = False
             for a in range(len(self.win)):
                 if len(self.win) > a+1:
@@ -270,49 +296,34 @@ class Poker:
 
                         if flip == 'split':
                             flip = True
-                            if [self.win[a][0], self.win[a][1]] not in self.split:
-                                self.split.append([self.win[a][0], self.win[a][1]])
-                                self.split.append([self.win[a+1][0], self.win[a+1][1]])
+                            repeated.append(self.win[a][1])
+                            repeated.append(self.win[a+1][1])
 
                         elif flip:
-                            temp = self.win[a][:]
+                            temp = self.win[a]
                             self.win[a] = self.win[a+1][:]
                             self.win[a+1] = temp[:]
-            count+=1
+        self.splitWork(repeated)
 
-        if len(self.split) != 0:
-            self.splitWork()
-
-    def splitWork(self):
-        temp = []
-        strength = self.split[0][0]
-        for a in range(len(self.split)):
-            if self.split[a][0] == strength:
-                temp.append(self.split[a][1])
-            else:
-                self.splitted.append(temp[:])
-                strength = self.split[a][0]
-                temp = []
-        self.splitted.append(temp[:]) #on the last pass it wont go to the else statement
+    def splitWork(self, repeated):
+        for a in range(0, len(repeated), 2):
+            if a - 1 >= 0:
+                if repeated[a] == repeated[a-1]:
+                    self.split[-1].append(repeated[a+1])
+                else:
+                    self.split.append([repeated[a], repeated[a+1]])
 
     def winStack(self):
-        printed = False
-        count = 0
-        print('splitted:', self.splitted)
-        while count < len(self.win):
-            printed = False
-            for pos in self.splitted:
-                temp = []
-                if self.win[count][1] in pos:
-                    for player in pos:
-                        temp.append([player, self.strengthList[self.win[count][0]]])
-                        printed = True
-                        count+=1
-                    self.playerWin.append(temp[:])
+        for s, player, h in self.win:
+            added = False
+            for players in self.split:
+                if player in players:
+                    self.playerWin.append(players)
+                    added = True
+                    del players[:]
 
-            if not printed:
-                self.playerWin.append([[self.win[count][1], self.strengthList[self.win[count][0]]]])
-            count+=1
+            if not added:
+                self.playerWin.append([player])
         print('playerWin:', self.playerWin)
 
     def sorting(self, hand1, hand2):
@@ -336,8 +347,7 @@ class Game:
         self.tableGroup = tableGroup
         self.table = table
         self.players = playersInGame
-        self.order = []
-        self.winnerList = []
+        self.winners = []
         self.turnIndex = self.dealer
         self.better = self.dealer
         self.noOfPlayers = len(self.players)
@@ -372,28 +382,18 @@ class Game:
             self.sendMessage(message, self.tableGroup)
         self.comCount+=1
 
-    def makePlayerOrder(self):
-        playerList = []
-        for player in self.players:
-            playerList.append(player)
-
-        for a in range(1, self.noOfPlayers+1):
-            player = (self.dealer+a)%self.noOfPlayers
-            self.order.append(playerList[player])
-        self.nextTurn()
-
     def nextTurn(self):
         self.turnIndex = (self.turnIndex+1)%self.noOfPlayers
-        self.turn = self.order[self.turnIndex]
+        self.turn = self.players[self.turnIndex]
 
     def getPlayer(self, player):
         try:
             userInstance = CustomUser.objects.get(username=player.username)
-            self.player = Players.objects.get(user_id=userInstance.id)
+            player = Players.objects.get(user_id=userInstance.id)
         except Players.DoesNotExist:
             self.getRoom()
-            return False
-        return True
+            return (False, '')
+        return (True, player)
 
     def getRoom(self):
         try:
@@ -416,8 +416,8 @@ class Game:
     def sendCards(self):
         for player in self.players:
             if player.playerIn:
-                self.getPlayer(player)
                 hand = Cards.convert(player.hand)
+                print('for simons shitty username***', player.username + '***end of username')
                 async_to_sync(get_channel_layer().group_send)(
                     player.username,
                     {
@@ -441,6 +441,7 @@ class Game:
         )
 
         playerLeft = False
+        self.getRoom()
         while self.game.action is None and not playerLeft:
             self.getRoom()
             if self.game.noOfPlayers == 1: #everyone leaves while its your turn
@@ -459,7 +460,7 @@ class Game:
                         self.sendMessage('Raise amount must be a positive integer', self.turn.username)
                         self.makeTurn()
 
-            if not self.getPlayer(self.turn):
+            if not self.getPlayer(self.turn)[0]:
                 self.choice = 'f'
                 playerLeft = True
                 print(self.turn.username, 'left')
@@ -468,10 +469,10 @@ class Game:
         self.game.save()
 
     def makeTurn(self):
-        self.getRoom()
-        if self.getPlayer(self.turn):
-            self.player.turn = True
-            self.player.save()
+        playerExists, player = self.getPlayer(self.turn)
+        if playerExists:
+            player.turn = True
+            player.save()
             self.getChoice()
 
         else:
@@ -503,10 +504,12 @@ class Game:
         return raiseAmount
 
     def updateDBMoney(self):
-        for player in self.players:
-            if self.getPlayer(player):
-                self.player.moneyInTable = player.money
-                self.player.save()
+        for user in self.players:
+            playerExists, player = self.getPlayer(user)
+            if playerExists:
+                print(user.username, str(user.money))
+                player.moneyInTable = user.money
+                player.save()
 
     def makeMessage(self, money):
         if self.choice == 'f':
@@ -549,41 +552,32 @@ class Game:
     def makeWinnerMessage(self):
         self.message = '\n------------------------------------------'
         showHands = []
-        winningIndex = 999
         startIndex = currentIndex = (self.dealer+1)%self.noOfPlayers
+        winningIndex = 999
         firstRun = True
-        noOfPlayersIn = self.checkMultiplePlayersIn()[1]
         while currentIndex != startIndex or firstRun:
             firstRun = False
             for a in range(len(self.P.playerWin)):
-                for player in self.P.playerWin[a]:
-                    print(player)
-                    if self.players[currentIndex] in player and a <= winningIndex and self.players[currentIndex].playerIn:
-                        print('got here')
-                        winningIndex = a
-                        moneyWon = 0
-                        for winner in self.winnerList:
-                            if self.players[currentIndex] in winner:
-                                moneyWon = winner[0]
+                if self.players[currentIndex] in self.P.playerWin[a]:
+                    currentWin = a
+            if self.players[currentIndex].playerIn and currentWin <= winningIndex:
+                winningIndex = currentWin
+                playerStats = {
+                    'username': self.players[currentIndex].username,
+                    'moneyWon': self.players[currentIndex].moneyWon
+                }
 
-                            playerStats = {
-                                'username': self.players[currentIndex].username,
-                                'moneyWon': moneyWon
-                            }
+                if self.checkMultiplePlayersIn()[1] > 1:
+                    playerStats['hand'] = Cards.convert(self.players[currentIndex].hand)
+                    playerStats ['strength'] = ': ' + self.players[currentIndex].handStrength + ' '
+                else:
+                    playerStats['hand'] = ''
+                    playerStats ['strength'] =  ''
 
-                            if noOfPlayersIn > 1:
-                                playerStats['hand'] = Cards.convert(self.players[a].hand)
-                                playerStats ['strength'] = ': ' + player[1] #hand strength name
-                            else:
-                                playerStats['hand'] = ''
-                                playerStats ['strength'] =  ''
-
-                        showHands.append(playerStats)
+                showHands.append(playerStats)
             currentIndex = (currentIndex+1)%self.noOfPlayers
 
-        print(showHands)
         for player in showHands:
-            print(player)
             winnings = ''
             if player['moneyWon'] != 0:
                 winnings = ' won ' + str(player['moneyWon'])
@@ -592,40 +586,42 @@ class Game:
 
         self.message += '\n------------------------------------------\n'
 
+    def distributeMoney(self, players, winners, pot):
+        players.sort(key = lambda x: x.putIn)
+        winners.sort(key = lambda x: x.putIn)
+        if len(winners) != 0:
+            money = players[0].putIn
+            moneyMade = money * len(players)
+            if moneyMade % len(winners) != 0: #need to return odd
+                oddMoney = moneyMade % len(winners)
+                print('odd money in pot:', str(oddMoney))
+                pot = self.distributeMoney(players, winners, oddMoney)
+
+            moneyWon = moneyMade // len(winners)
+            for player in players:
+                print(player.username, str(player.money))
+                if player.putIn != 0:
+                    player.decreasePutIn(money)
+                    if player in winners:
+                        player.increaseMoney(moneyWon)
+                print(player.username, str(player.money))
+            pot -= moneyMade
+            if winners[0] == players[0]:
+                del winners[0]
+            pot = self.distributeMoney(players[1:][:], winners, pot)
+        return pot
+
     def winner(self):
-        playerWinners = []
         a = 0
+        print('playerWin', self.P.playerWin)
         while self.pot != 0:
-            winners = []
             for player in self.P.playerWin[a]:
-                if player[0].playerIn:
-                    playerWinners.append(player[0])
-            print('playerWinners:', playerWinners)
-
-            winnerPrize = 0
-            for winner in playerWinners:
-                maxPrize = 0
-                for player in self.players:
-                    if player.putIn > winner.putIn:
-                        maxPrize += winner.putIn
-                    else:
-                        maxPrize += player.putIn
-                winners.append([maxPrize, winner])
-                winnerPrize += maxPrize
-
-            while winnerPrize > self.pot:
-                winners.sort(key = lambda x: x[0], reverse=True)
-                winners[0][0] -= 1
-                winnerPrize = 0
-                for item in winners:
-                    winnerPrize += item[0]
-
-            self.pot -= winnerPrize
-            for winner in winners:
-                self.winnerList.append(winner)
-            
-            for player in winners:
-                player[1].increaseMoney(player[0])
+                if player.playerIn:
+                    self.winners.append(player)
+            print('winners', self.winners)
+            self.pot = self.distributeMoney(self.players[:], self.winners[:], self.pot)
+            print(self.pot)
+            print(self.winners)
             self.updateDBMoney()
             a+=1
         self.makeWinnerMessage()
@@ -633,9 +629,9 @@ class Game:
 
 
     def play(self):
-        self.makePlayerOrder()
+        self.nextTurn()
         for a in range(4):
-            self.better = (self.dealer+1)%self.noOfPlayers #dunno about this line
+            self.better = (self.dealer+1)%self.noOfPlayers
             firstRun = True
             if a == 0:
                 self.blinds()
@@ -646,7 +642,6 @@ class Game:
                 while (self.turnIndex != self.better or firstRun):
                     self.updateDBMoney()
                     self.sendCards()
-                    print('players:', self.players)
                     firstRun = False
                     if self.turn.money != 0 and self.turn.playerIn:
                         self.makeTurn()
