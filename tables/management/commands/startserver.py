@@ -19,7 +19,7 @@ class Command(BaseCommand):
         addrport = kwargs['addrport']
         thread = threading.Thread(target=self.removeTables, daemon=True)
         thread.start()
-        call_command('runserver', addrport)
+        call_command('runserver', '--noreload', addrport)
 
     def removeTables(self):
         while True:
