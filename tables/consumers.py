@@ -16,14 +16,15 @@ class MoneyConsumer(WebsocketConsumer):
         self.accept()
         self.username = self.scope['url_route']['kwargs']['username']
         self.player = CustomUser.objects.get(username=self.username)
-        thread = threading.Thread(target=self.checkMoney, daemon=True)
-        thread.start()
+        self.stopEvent = threading.Event()
+        self.thread = threading.Thread(target=self.checkMoney, args=(self.stopEvent,), daemon=True)
+        self.thread.start()
 
-    def disconnect(self, close_code):
-        pass
+    def disconnect(self, closeCode):
+        self.stopEvent.set()
 
-    def checkMoney(self):
-        while True:
+    def checkMoney(self, stopEvent):
+        while not stopEvent.is_set():
             self.player = CustomUser.objects.get(username=self.username)
             self.totalMoney = self.player.money
             self.moneyInTable = 0
