@@ -20,7 +20,6 @@ urlpatterns = [
     path('', include('tables.urls')),
     path('poker/', include('poker.urls')),
     path('leaderboard/', include('leaderboard.urls')),
-    path('profile/', include('accountsettings.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
     path('accounts/', include('django.contrib.auth.urls')),

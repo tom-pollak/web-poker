@@ -7,28 +7,31 @@ import json
 #from .poker import main
 
 class PokerConsumer(WebsocketConsumer):
+    #adds the player to the poker group to recieve the community cards and bets
+    #adds the player to a unique group to recieve his cards
     def connect(self):
         self.pk = self.scope['url_route']['kwargs']['pk']
         self.player = self.scope['user']
         self.username = self.player.username
-        p = self.scope['user']
-        print('p ID', p.id)
         print('player:', self.username)
-        print('player.id', self.player.id)
         self.tableGroup = 'table_' + self.pk
 
+        #group socket
         async_to_sync(self.channel_layer.group_add)(
             self.tableGroup,
             self.channel_name
         )
         
+        #unique socket
         async_to_sync(self.channel_layer.group_add)(
             str(self.username),
             self.channel_name
         )
+        #accepts all communication with web socket
         self.accept()
 
     def disconnect(self, closeCode):
+        #disconnects from group sockets
         async_to_sync(self.channel_layer.group_discard)(
             self.tableGroup,
             self.channel_name
@@ -37,9 +40,13 @@ class PokerConsumer(WebsocketConsumer):
             str(self.username),
             self.channel_name
         )
-        pokerInstance = Room.objects.get(groupName=self.tableGroup)
-        pokerInstance.noOfPlayers -= 1
-        pokerInstance.save()
+        #
+        try:
+            pokerInstance = Room.objects.get(groupName=self.tableGroup)
+            pokerInstance.noOfPlayers -= 1
+            pokerInstance.save()
+        except Room.DoesNotExist:
+            pass
 
         playerInstance = Players.objects.get(user_id=self.player.id) #need the second 1 so money updates
         self.player.money += playerInstance.moneyInTable
@@ -47,7 +54,6 @@ class PokerConsumer(WebsocketConsumer):
         playerInstance.delete()
         players = Players.objects.filter(poker_id=self.tableGroup).values()
         print('players in consumers', players)
-
 
         if len(players) == 0:
             pokerInstance.delete()

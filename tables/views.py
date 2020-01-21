@@ -24,16 +24,16 @@ def resetMoney(request):
 
 @login_required
 def createTable(request):
+    #user submitting the form
     if request.method == 'POST':
         form = TableForm(request.POST)
         if form.is_valid():
             table = form.save()
             return redirect('game', pk=table.pk)
-    else:
+
+    #user GETting the form
+    elif request.method == 'GET':
         form = TableForm()
 
-    context = {
-        'form': form
-    }
-
+    context = {'form': form}
     return render(request, 'tableForm.html', context)
