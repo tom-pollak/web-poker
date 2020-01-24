@@ -1,12 +1,19 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from poker.models import Players
 
 class Table(models.Model):
     def getNoOfPlayers(self):
         try:
-            noOfPlayers = self.room.noOfPlayers
-        except:
+            players = Players.objects.filter(room=self.room)
+            for player in players:
+                if player.moneyInTable == 0:
+                    players.remove(player)
+            noOfPlayers = len(players)
+
+        except Room.DoesNotExist:
             noOfPlayers = 0
+
         return noOfPlayers
         
     name = models.CharField(max_length=24, unique=True)

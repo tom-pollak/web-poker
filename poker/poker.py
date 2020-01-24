@@ -9,7 +9,6 @@ import sys
 from datetime import datetime, timezone
 
 #TODO
-#somebody posted bb and sb?? unreproducable
 #re buy in
 
 class Player:
@@ -89,9 +88,6 @@ class Player:
         else: #all-in situation
             moneyToPutIn = self.__money
             self.__money = 0
-
-        if moneyToPutIn == 0:
-            print('no money put in')
 
         self.__putIn += moneyToPutIn
         self.__callAmount = 0
@@ -349,11 +345,10 @@ class Poker:
                     self.playerWin.append(players)
                     added = True
                     #deletes the added split array otherwise it would cause duplicates
-                    del self.split[players][:]
+                    self.split.remove(players)
 
             if not added:
                 self.playerWin.append([player])
-        print('playerWin:', self.playerWin)
 
 class Game:
     def __init__(self, minimumBet, dealer, tableGroup, table, playersInGame):
@@ -391,11 +386,24 @@ class Game:
         elif self.comCount == 3:
             self.comCards = Cards.convert(self.C.comCards[:])
             message = 'River: '
-        
+
+        self.comCount+=1
+        return message
+    
+    def sendComCards(self, message):
         message += self.comCards
         if message != '':
             self.sendMessage(message, self.tableGroup)
-        self.comCount+=1
+    
+    def checkNotAllFolded(self):
+        count = 0
+        for player in self.players:
+            if player.playerIn:
+                count += 1
+        if count > 1:
+            return True
+        else:
+            return False
 
     def nextTurn(self):
         self.turnIndex = (self.turnIndex+1)%self.noOfPlayers
@@ -412,7 +420,7 @@ class Game:
 
     def getRoom(self):
         try:
-            self.game = Room.objects.get(table=self.table)
+            self.room = Room.objects.get(table=self.table)
         except Room.DoesNotExist:
             print('everyone left')
             self.table.lastUsed = datetime.now(timezone.utc)
@@ -456,21 +464,21 @@ class Game:
 
         playerLeft = False
         self.getRoom()
-        while self.game.action is None and not playerLeft:
+        while self.room.action is None and not playerLeft:
             self.getRoom()
             #everyone leaves while its your turn
-            if self.game.noOfPlayers == 1:
-                self.game.action = 'c'
-                self.game.save()
+            if self.table.getNoOfPlayers() == 1:
+                self.room.action = 'c'
+                self.room.save()
                 self.choice = 'c'
 
-            elif self.game.action is not None:
+            elif self.room.action is not None:
                 #the first character is the action the user wants to take
                 #after that it is the optional raiseAmount
-                self.choice = self.game.action[0]
+                self.choice = self.room.action[0]
                 if self.choice == 'r':
                     try:
-                        self.raiseAmount = self.game.action[1:]
+                        self.raiseAmount = self.room.action[1:]
                         if not int(self.raiseAmount) > 0:
                             raise ValueError()
                     except ValueError:
@@ -482,8 +490,8 @@ class Game:
                 playerLeft = True
                 print(self.turn.username, 'left')
 
-        self.game.action = None
-        self.game.save()
+        self.room.action = None
+        self.room.save()
 
     def makeTurn(self):
         playerExists, player = self.getPlayer(self.turn)
@@ -558,12 +566,12 @@ class Game:
     def checkMultiplePlayersIn(self):
         count = 0
         for player in self.players:
-            if player.playerIn and player.money > 0:
+            if player.money > 0:
                 count+=1
         if count > 1:
-            if self.table.getNoOfPlayers() > 1:
-                return (True, count)
-        return (False, count)
+            if self.table.getNoOfPlayers() > 1: #not sure what this is for
+                return True
+        return False
 
     def makeWinnerMessage(self):
         self.message = '\n------------------------------------------'
@@ -585,7 +593,7 @@ class Game:
                     'moneyWon': self.players[currentIndex].moneyWon
                 }
 
-                if self.checkMultiplePlayersIn()[1] > 1:
+                if self.checkNotAllFolded():
                     playerStats['hand'] = Cards.convert(self.players[currentIndex].hand)
                     playerStats ['strength'] = ': ' + self.players[currentIndex].handStrength + ' '
                 else:
@@ -607,7 +615,10 @@ class Game:
         winners.sort(key = lambda x: x.putIn)
         if len(winners) != 0:
             #money given out equal to the minimum players putIn
+            #or pot if in the oddMoney recursion
             money = sortedPlayers[0].putIn
+            if money > pot:
+                money = pot
             moneyMade = money * len(sortedPlayers)
             
             #if the money cannot be shared equally
@@ -633,7 +644,7 @@ class Game:
             #decrease pot by money given out
             pot -= moneyMade
             #delete minimum putIn player
-            del players[players.index(sortedPlayers[0])]
+            players.remove(sortedPlayers[0])
             if winners[0] == sortedPlayers[0]:
                 del winners[0]
 
@@ -662,16 +673,20 @@ class Game:
             firstRun = True
             if a == 0:
                 self.blinds()
-            self.makeComCards()
-            if self.checkMultiplePlayersIn()[0]:
-                while (self.turnIndex != self.better or firstRun):
-                    self.updateDBMoney()
-                    self.sendCards()
-                    firstRun = False
-                    if self.turn.money != 0 and self.turn.playerIn:
-                        self.makeTurn()
-                        self.makeChoice()
-                    self.nextTurn()
+            message = self.makeComCards()
+            if self.checkNotAllFolded():
+                if self.checkMultiplePlayersIn():
+                    self.sendComCards(message)
+                    while (self.turnIndex != self.better or firstRun):
+                        self.updateDBMoney()
+                        self.sendCards()
+                        firstRun = False
+                        if self.turn.money != 0 and self.turn.playerIn:
+                            self.makeTurn()
+                            self.makeChoice()
+                        self.nextTurn()
+                elif a == 3:
+                    self.sendComCards(message)
         self.winner()
 
 def addPlayer(room, table, username):
@@ -680,32 +695,31 @@ def addPlayer(room, table, username):
     player.money -= table.buyIn
     player.save()
 
-    room.noOfPlayers += 1
-    room.save()
-
-def startGame(table, tableGroup):
+def startGame(table):
     dealer = 0
+    tableGroup = 'table_' + str(table.pk)
     while True:
         #waits until their is more than one player in the table to start
         table.refresh_from_db()
-        while table.getNoOfPlayers() <= 1:
+        while table.getNoOfPlayers() == 1:
             table.refresh_from_db()
             time.sleep(0.2)
         
         #if single player leaves table before anyone joins
-        if table.getNoOfPlayers() < 1:
-            print('everyone left (startGame)')
+        if table.getNoOfPlayers() == 0:
+            print('first player left')
             table.lastUsed = datetime.now(timezone.utc)
             table.save()
             sys.exit()    
 
         #gets players in table
         playersInGame = []
-        players = Players.objects.filter(poker_id=tableGroup) #table group is the primary key of Room
+        players = Players.objects.filter(poker_id=table) #table group is the primary key of Room
         #creates an array of Player objects
-        for item in players:
-            if item.moneyInTable > 0:
-                playersInGame.append(Player(item.user.username, item.moneyInTable))
+        for player in players:
+            print(player.moneyInTable)
+            if player.moneyInTable > 0:
+                playersInGame.append(Player(player.user.username, player.moneyInTable))
         #starts game
         Game((table.buyIn)//100, dealer, tableGroup, table, playersInGame)
         dealer +=1
@@ -713,7 +727,6 @@ def startGame(table, tableGroup):
 
 def main(pk, username):
     table = Table.objects.get(pk=pk)
-    tableGroup = 'table_' + str(pk)
     #check to see if table exists
     try:
         room = Room.objects.get(table=table)
@@ -721,6 +734,6 @@ def main(pk, username):
 
     #if the room dosen't exist create one
     except Room.DoesNotExist:
-        room = Room.objects.create(table=table, groupName=tableGroup)
+        room = Room.objects.create(table=table)
         addPlayer(room, table, username)
-        startGame(table, tableGroup)
+        startGame(table)
