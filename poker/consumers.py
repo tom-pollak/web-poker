@@ -41,15 +41,16 @@ class PokerConsumer(WebsocketConsumer):
             str(self.username),
             self.channel_name
         )
-        playerInstance = Players.objects.get(user_id=self.player.id) #need the second 1 so money updates
+        #update player money
+        playerInstance = Players.objects.get(user=self.player)
         self.player.money += playerInstance.moneyInTable
         self.player.save()
         playerInstance.delete()
-        players = Players.objects.filter(poker_id=self.tableGroup)
-        print('players in consumers', players)
-
+        
+        #if noone in left in table delete table
+        players = Players.objects.filter(poker_id=self.table)
         if len(players) == 0:
-            pokerInstance.delete()
+            self.room.delete()
 
     def receive(self, text_data):
         player = Players.objects.get(user=self.player)
