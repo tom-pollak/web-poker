@@ -15,6 +15,7 @@ class PokerConsumer(WebsocketConsumer):
         self.username = self.player.username
         print('player:', self.username)
         self.tableGroup = 'table_' + self.pk
+        self.room = Room.objects.get(table_id=self.pk)
 
         #group socket
         async_to_sync(self.channel_layer.group_add)(
@@ -40,19 +41,11 @@ class PokerConsumer(WebsocketConsumer):
             str(self.username),
             self.channel_name
         )
-        #
-        try:
-            pokerInstance = Room.objects.get(groupName=self.tableGroup)
-            pokerInstance.noOfPlayers -= 1
-            pokerInstance.save()
-        except Room.DoesNotExist:
-            pass
-
         playerInstance = Players.objects.get(user_id=self.player.id) #need the second 1 so money updates
         self.player.money += playerInstance.moneyInTable
         self.player.save()
         playerInstance.delete()
-        players = Players.objects.filter(poker_id=self.tableGroup).values()
+        players = Players.objects.filter(poker_id=self.tableGroup)
         print('players in consumers', players)
 
         if len(players) == 0:
@@ -78,7 +71,6 @@ class PokerConsumer(WebsocketConsumer):
             player.turn = False
             textDataJson = json.loads(text_data)
             message = textDataJson['action']
-            game =  Room.objects.get(groupName=self.tableGroup)
 
             if message == 'fold':
                 action = 'f'
@@ -90,8 +82,8 @@ class PokerConsumer(WebsocketConsumer):
             elif message == 'call':
                 action = 'c'
 
-            game.action = action
-            game.save()
+            self.room.action = action
+            self.room.save()
             player.save()
 
     def pokerMessage(self, event):
@@ -107,7 +99,6 @@ class PokerConsumer(WebsocketConsumer):
     def playerTurn(self, event):
         message = 'It\'s your turn'
         putIn = event['putIn']
-        #moneyInTable = event['moneyInTable']
         self.send(text_data=json.dumps({
             'message': message,
             'putIn': putIn
