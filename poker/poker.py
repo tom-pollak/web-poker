@@ -737,5 +737,5 @@ def main(pk, username):
         addPlayer(room, table, username)
         startGame(table)
 
-def tests():
+def tests(pk, username):
     pass
