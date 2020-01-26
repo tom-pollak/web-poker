@@ -1,7 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from tables.models import Table
-from poker.models import Room
-import json
 import threading
 from .poker import main
 from django.contrib.auth.decorators import login_required

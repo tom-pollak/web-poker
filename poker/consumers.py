@@ -48,7 +48,8 @@ class PokerConsumer(WebsocketConsumer):
         playerInstance.delete()
         
         #if noone left in table delete table
-        players = Players.objects.filter(poker_id=self.table)
+        self.room.refresh_from_db()
+        players = Players.objects.filter(room=self.room)
         if len(players) == 0:
             self.room.delete()
 

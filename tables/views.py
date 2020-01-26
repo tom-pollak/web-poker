@@ -26,8 +26,10 @@ def resetMoney(request):
 def createTable(request):
     #user submitting the form
     if request.method == 'POST':
+        #gets form submission based on the POST request
         form = TableForm(request.POST)
         if form.is_valid():
+            #saves form as Table model
             table = form.save()
             return redirect('game', pk=table.pk)
 

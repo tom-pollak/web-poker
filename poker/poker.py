@@ -446,7 +446,7 @@ class Game:
                         'type': 'cards',
                         'hand': hand,
                         'comCards': self.comCards,
-                        'dealer': self.dealer,
+                        'dealer': self.players[self.dealer].username,
                         'moneyInTable': str(player.money)
 
                     }
@@ -653,7 +653,6 @@ class Game:
 
     def winner(self):
         a = 0
-        print('playerWin', self.P.playerWin)
         while self.pot != 0:
             for player in self.P.playerWin[a]:
                 if player.playerIn:
@@ -691,7 +690,7 @@ class Game:
 
 def addPlayer(room, table, username):
     player = CustomUser.objects.get(username=username)
-    playerInstance = Players.objects.create(user=player, poker=room, moneyInTable=table.buyIn)
+    playerInstance = Players.objects.create(user=player, room=room, moneyInTable=table.buyIn)
     player.money -= table.buyIn
     player.save()
 
@@ -707,22 +706,22 @@ def startGame(table):
         
         #if single player leaves table before anyone joins
         if table.getNoOfPlayers() == 0:
-            print('first player left')
+            print('player left, not in game')
             table.lastUsed = datetime.now(timezone.utc)
             table.save()
             sys.exit()    
 
         #gets players in table
         playersInGame = []
-        players = Players.objects.filter(poker_id=table) #table group is the primary key of Room
+        players = Players.objects.filter(room_id=table.id) #table group is the primary key of Room
         #creates an array of Player objects
         for player in players:
-            print(player.moneyInTable)
             if player.moneyInTable > 0:
                 playersInGame.append(Player(player.user.username, player.moneyInTable))
+        print('playersInGame:', playersInGame)
+        dealer = (dealer+1)%len(playersInGame)
         #starts game
         Game((table.buyIn)//100, dealer, tableGroup, table, playersInGame)
-        dealer +=1
         time.sleep(1)
 
 def main(pk, username):
@@ -732,8 +731,11 @@ def main(pk, username):
         room = Room.objects.get(table=table)
         addPlayer(room, table, username)
 
-    #if the room dosen't exist create one
+    #if room dosen't exist create one
     except Room.DoesNotExist:
         room = Room.objects.create(table=table)
         addPlayer(room, table, username)
         startGame(table)
+
+def tests():
+    pass

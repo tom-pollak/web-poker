@@ -37,13 +37,13 @@
 
             for (i=0; i < tables.length; i++) {
                 console.log(tables)
-                if (tables[i].room != null) {
-                    document.getElementById(tables[i].name + '-noOfPlayers').innerHTML = 
-                    'Players: ' + tables[i].room.noOfPlayers + '/' + tables[i].maxNoOfPlayers;
-                } else {
-                    document.getElementById(tables[i].name + '-noOfPlayers').innerHTML = 
-                    'Players: 0/' + tables[i].maxNoOfPlayers;
-                }
+                //if (tables[i].room != null) {
+                document.getElementById(tables[i].name + '-noOfPlayers').innerHTML = 
+                'Players: ' + tables[i].noOfPlayers + '/' + tables[i].maxNoOfPlayers;
+                //} else {
+                    //document.getElementById(tables[i].name + '-noOfPlayers').innerHTML = 
+                    //'Players: 0/' + tables[i].maxNoOfPlayers;
+                //}
             }
 
         }

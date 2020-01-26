@@ -11,7 +11,7 @@ class Table(models.Model):
                     players.remove(player)
             noOfPlayers = len(players)
 
-        except Room.DoesNotExist:
+        except:
             noOfPlayers = 0
 
         return noOfPlayers
