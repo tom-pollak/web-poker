@@ -2,14 +2,15 @@ from .models import Table
 from poker.models import Room
 from rest_framework import serializers
 
-class RoomSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Room
-        fields = ['noOfPlayers']
 
 class TableSerializer(serializers.ModelSerializer):
-    room = RoomSerializer(read_only=True, required=False)
+    noOfPlayers = serializers.SerializerMethodField()
 
     class Meta:
         model = Table
-        fields = ['name', 'room', 'maxNoOfPlayers']
+        #the fields serailized
+        fields = ['name', 'maxNoOfPlayers', 'noOfPlayers']
+    
+    def get_noOfPlayers(self, obj):
+        #uses the Table method to get the no of players
+        return obj.getNoOfPlayers()

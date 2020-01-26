@@ -7,9 +7,10 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
+                    <p id="dealer">Dealer:</p><br/>
                     <p id="pot">Pot: 0</p><br/>
-                    <p id="money-in-table">Money: </p><br/>
-                    <p id="hand">Hand: </p><br />
+                    <p id="money-in-table">Money:</p><br/>
+                    <p id="hand">Hand: </p><br/>
                     <p id="com-cards">Community cards:</p>
                     <br/>
                     <div id='buttons'>
@@ -101,6 +102,7 @@
             document.getElementById('hand').innerHTML = ('Hand: ' + hand);
             document.getElementById('com-cards').innerHTML = ('Community cards: ' + comCards);
             document.getElementById('money-in-table').innerHTML = ('Money: ' + moneyInTable);
+            document.getElementById('dealer').innerHTML = ('Dealer: ' + dealer)
 
         } else if (message == 'winner') {
             var showdown = data['showdown'];
