@@ -736,6 +736,3 @@ def main(pk, username):
         room = Room.objects.create(table=table)
         addPlayer(room, table, username)
         startGame(table)
-
-def tests(pk, username):
-    pass
