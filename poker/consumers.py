@@ -152,8 +152,6 @@ def getCensoredWords():
 
 def censor(message, censoredList):
     words = message.split(' ')
-    print(words)
-    print(censoredList)
     for word in words:
         if word in censoredList:
             message = message.replace(word, '*' * len(word))
