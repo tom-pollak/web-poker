@@ -73,10 +73,7 @@ class Player:
         return self.__putIn
 
     def decreasePutIn(self, amount):
-        if amount <= self.__putIn:
-            self.__putIn -= amount
-        else:
-            raise Exception('amount to decrease putIn by was greater than putIn.')
+        self.__putIn -= amount
 
     def fold(self):
         self.__playerIn = False
@@ -95,13 +92,16 @@ class Player:
 
 class Cards:
     def __init__(self, players):
+        TESTING = True #change for testing purposes
         self.__players = players
-        self.__noOfPlayers = len(self.__players)
         self.__playerHands = []
         self.__deck = []
         self.__comCards = []
         self.makeDeck()
-        self.hands()
+        if not TESTING:
+            self.hands()
+        else:
+            self.makeHandsMan()
 
     def makeDeck(self):
         self.__deck = [[k, j] for j in range(4) for k in range(2,15)]
@@ -111,7 +111,6 @@ class Cards:
         self.__comCards = self.__deck[:5][:]
         del self.__deck[:5]
         for player in self.__players:
-            playerHand = []
             playerHand = self.__deck[:2][:]
             del self.__deck[:2]
             player.hand = playerHand
@@ -141,6 +140,18 @@ class Cards:
                     convertHand += (suits[b] + ' ')
         return convertHand
 
+    def makeHandsMan(self):
+        self.__comCards = [[2, 2], [3, 2], [10, 2], [11, 2], [10, 3]]
+        hands = [[
+                [2, 3], [3, 3] #first player hand
+            ], [
+                [2, 1], [3, 1] #second player hand etc
+            ], [
+                [2, 0], [13, 0]
+        ]]
+
+        for player, hand in zip(self.__players, hands):
+            player.hand = hand
 
 class Poker:
     def __init__(self, players, C):
@@ -154,6 +165,7 @@ class Poker:
         self.split = []
         self.handStrength()
         self.winQueue()
+
     @property
     def playerWin(self):
         return self.__playerWin
@@ -165,127 +177,117 @@ class Poker:
     def handStrength(self):
         for player in self.players:
             self.orderHand = []
+            self.strength = 0
             self.hand = player.hand + self.C.comCards
             self.hand.sort(reverse=True)
-            self.pairThree()
-            self.straightFlush()
+            self.checkRank()
+            self.flush(self.hand, 5)
+            self.straight(self.hand)
             player.handStrength = self.strengthList[self.strength]
             self.win.append([self.strength, player, self.orderHand[:]])
         self.win.sort(key = lambda x: x[0], reverse=True)
         self.clash()
 
-    def pairThree(self):
-        countList = []
-        hand = self.hand[:]
-        pair = 0
-        three = False
-        pairIndex = []
-        threeIndex = []
-        self.strength = 0
-
-        for a in range(7):
-            count = 0
-            temp = []
-            for b in range(7):
-                if hand[a][0] == hand[b][0]:
-                    count+=1
-                    temp.append(hand[a][0])
-            countList.append([count, temp]) #test this
-
-        for a in range(7):
-            if countList[a][0] == 2:
-                pair+=1
-                pairIndex.append([countList[a][1][0], a])
-
-            elif countList[a][0] == 3:
-                three = True
-                if self.strength <= 3:
-                    self.strength = 3
-                    threeIndex.append(hand[a][:])
-                    #self.orderHand = [hand[a][:]] + self.orderHand
-                    hand[a] = ''
-
-            elif countList[a][0] == 4:
-                if self.strength <= 7:
-                    self.strength = 7
-                    self.orderHand = [hand[a][:]] 
-                    hand[a] = ''
-
-
-
-        #only use the strongest three of a kind
-        threeIndex = threeIndex[:3]
-        for three in threeIndex:
-            self.orderHand.append(three)
-
-        pairIndex.sort(reverse=True)
-        pairIndex = pairIndex[:2]
-        for item in pairIndex:
-            self.orderHand.append(hand[item[1]][:])
-            hand[item[1]] = ''
-
-        if pair == 2:
-            if three:
-                if self.strength < 6:
-                    self.strength = 6
+    def checkRank(self):
+        #determines whether cards are a pair of 3 of a kind
+        def twoThree(pStrength2, pStrength3):
+            if len(sameRank[0]) == 3:
+                return pStrength3
             else:
-                if self.strength <= 1:
-                    self.strength = 1
+                return pStrength2
 
-        elif pair == 4:
-            if self.strength < 2:
-                self.strength = 2
-
-        while '' in hand:
-            hand.remove('')
-
-        for item in hand:
-            self.orderHand.append(item)
-        self.orderHand = self.orderHand[:5]
-
-    def straightFlush(self):
-        count = 0
-        for a in range(4):
-            count = 0
-            for item in self.hand:
-                if item[1] == a:
-                    count+=1
-
-            if count >= 5 and self.strength < 5:
-                self.orderHand = []
-                self.strength = 5
-                for item in self.hand:
-                    if item[1] == a:
-                        self.orderHand.append(item[:])
-        count = 0
-
-        for item in self.hand:
-            if 14 in item:
-                self.hand.append([1, item[1]])
-
-        for b in range(len(self.hand)):
-            if len(self.hand) > b+1:
-                #looking for straights
-                if self.hand[b][0]+1 == self.hand[b+1][0]:
-                    count+=1
+        i = 0
+        sameRank = []
+        while i < 6:
+            temp = [self.hand[i]]
+            try:
+                #adds cards of same rank to temp
+                while self.hand[i][0] == self.hand[i+1][0]:
+                    temp.append(self.hand[i+1])
+                    i+=1
                 else:
-                    count = 0
+                    i+=1
+            except IndexError:
+                pass
+            #if more than one card of same rank add to sameRAnl
+            if len(temp) > 1:
+                sameRank.append(temp[:])
 
-                if count == 4:
+        #sort by length of same ranked cards,
+        #e.g. 4 of a kind > 3 of a kind > pair
+        sameRank.sort(key = lambda x: len(x), reverse=True)
+        sameRank = sameRank[:2]
+        if len(sameRank) != 0:
+            #if 4 cards, four of a kind
+            if len(sameRank[0]) == 4:
+                sameRank = sameRank[:1]
+                self.strength = 7
+
+            else:
+                #if two pair or full house
+                if len(sameRank) == 2:
+                    self.strength = twoThree(2, 6)
+                else:
+                    self.strength = twoThree(1, 3)
+
+        #put all cards from sameRank in 1d array
+        temp = []
+        for cards in sameRank:
+            for card in cards:
+                temp.append(card)
+
+        #add cards not included in sameRank
+        for card in self.hand:
+            if card not in temp:
+                temp.append(card)
+        #make orderHand
+        self.orderHand = temp[:5]
+
+    def flush(self, hand, pStrength):
+        #iterates over all 4 suits
+        for i in range(4):
+            flush = []
+            for item in hand:
+                #appends item to flush array if same suit
+                if item[1] == i:
+                    flush.append(item)
+
+            if len(flush) == 5 and self.strength < pStrength:
+                self.strength = pStrength
+                self.orderHand = flush[:5]
+
+    def straight(self, hand):
+        #temporarily adds ace as 1
+        for item in hand:
+            if 14 in item:
+                hand.append([1, item[1]])
+
+        straightHand = []
+        for j in range(len(hand)):
+            if len(hand) > j+1:
+                #as hand sorted reversed compare less 1 to the card
+                #rank below it
+                if hand[j][0]-1 == hand[j+1][0]:
+                    if len(straightHand) == 0:
+                        straightHand.append(hand[j])
+                    straightHand.append(hand[j+1])
+
+                elif hand[j][0] != hand[j+1][0]:
+                    straightHand = []
+                
+                else:
+                    #for straight flushes make a new straight check without
+                    #duplicate card evey time same number is found
+                    self.straight(hand[:j] + hand[j+1:])
+
+                if len(straightHand) == 5:
+                    #checks if straight is straight flush
+                    self.flush(straightHand, 8)
                     if self.strength <= 4:
                         self.strength = 4
-                        self.orderHand = self.hand[b-4:b+1][:]
+                        self.orderHand = straightHand
 
-                    for c in range(4):
-                        count2 = 0
-                        for item in self.hand[b-4:b+1]:
-                            if item[1] == a:
-                                count2+=1
-
-                        if count2 >= 5:
-                            self.strength = 8
-                            self.orderHand = self.hand[b-4:b+1][:]
-
+        #if the straight flush is Ace to 10 then it is a royal flush
         if self.strength == 8 and self.orderHand[0][0] == 14:
             self.strength = 9
 
@@ -301,7 +303,7 @@ class Poker:
                         flip = self.sorting(self.win[a][2], self.win[a+1][2])
 
                         if flip == 'split':
-                            flip = True
+                            flip = False
                             repeated.append(self.win[a][1])
                             repeated.append(self.win[a+1][1])
 
@@ -334,6 +336,8 @@ class Poker:
                     self.split[-1].append(repeated[a+1])
                 else:
                     self.split.append([repeated[a], repeated[a+1]])
+            else:
+                self.split.append([repeated[a], repeated[a+1]])
     
     #adds each player to playerWin in an array
     def winQueue(self):
@@ -345,10 +349,14 @@ class Poker:
                     self.playerWin.append(players)
                     added = True
                     #deletes the added split array otherwise it would cause duplicates
-                    self.split.remove(players)
-
+                    #self.split.remove(players)
             if not added:
                 self.playerWin.append([player])
+
+        #remove duplicate split arrays
+        self.playerWin = [tuple(x) for x in self.playerWin]
+        self.playerWin = list(dict.fromkeys(self.playerWin))
+        self.playerWin = [list(x) for x in self.playerWin]
 
 class Game:
     def __init__(self, minimumBet, dealer, tableGroup, table, playersInGame):
@@ -629,17 +637,18 @@ class Game:
                 a = -1
                 while players[a] not in winners:
                     a-=1
-                newWinners = winners[winners.index(players[a])][:]
-                pot = self.distributeMoney(players, newWinners, oddMoney)
+                print('removing winner:', players[a].username)
+                tempWin = winners[:]
+                tempWin.remove(players[a])
+                pot += self.distributeMoney(players[:], tempWin, oddMoney) 
 
             #decrease each players putIn by the min players putIn
             #increase each winners by the (min players putIn * players)// no winners
             moneyWon = moneyMade // len(winners)
             for player in sortedPlayers:
-                if player.putIn != 0: #not sure if line needed
-                    player.decreasePutIn(money)
-                    if player in winners:
-                        player.increaseMoney(moneyWon)
+                player.decreasePutIn(money)
+                if player in winners:
+                    player.increaseMoney(moneyWon)
 
             #decrease pot by money given out
             pot -= moneyMade
@@ -665,6 +674,7 @@ class Game:
         self.sendMessage(self.message, self.tableGroup)
 
     def play(self):
+        print('in game')
         self.nextTurn()
         for a in range(4):
             #one to the dealers left
@@ -709,7 +719,7 @@ def startGame(table):
             print('player left, not in game')
             table.lastUsed = datetime.now(timezone.utc)
             table.save()
-            sys.exit()    
+            sys.exit()
 
         #gets players in table
         playersInGame = []
