@@ -1,0 +1,13 @@
+
+TASKS
+13.	Players will be able to add friends and join the table they are in
+14.	Players can keep track of other stats such as number of hands played, % hands won etc.
+18.	A how to play page for new players.
+
+EXTENSION
+1.	Players can create private tables, which require a password to enter
+2.	Players can join multiple tables at once, and switch between them
+3.	The table could be shown with players in a circle and a pot and community cards in the middle, rather than being text based
+4.	Cards shown with images instead of text
+5.	Card and chip animations
+7.	Site uses HTTPS to prevent username and passwords being intercepted, along with poker hands
