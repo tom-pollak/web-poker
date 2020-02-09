@@ -92,7 +92,7 @@ class Player:
 
 class Cards:
     def __init__(self, players):
-        TESTING = True #change for testing purposes
+        TESTING = False #change for testing purposes
         self.__players = players
         self.__playerHands = []
         self.__deck = []
@@ -141,9 +141,9 @@ class Cards:
         return convertHand
 
     def makeHandsMan(self):
-        self.__comCards = [[2, 2], [3, 2], [10, 2], [11, 2], [10, 3]]
+        self.__comCards = [[14, 2], [12, 1], [11, 2], [8, 1], [5, 2]]
         hands = [[
-                [2, 3], [3, 3] #first player hand
+                [4, 1], [1, 2] #first player hand
             ], [
                 [2, 1], [3, 1] #second player hand etc
             ], [
@@ -182,7 +182,8 @@ class Poker:
             self.hand.sort(reverse=True)
             self.checkRank()
             self.flush(self.hand, 5)
-            self.straight(self.hand)
+            tempHand = self.addAceAsOne(self.hand)
+            self.straight(tempHand)
             player.handStrength = self.strengthList[self.strength]
             self.win.append([self.strength, player, self.orderHand[:]])
         self.win.sort(key = lambda x: x[0], reverse=True)
@@ -256,12 +257,15 @@ class Poker:
                 self.strength = pStrength
                 self.orderHand = flush[:5]
 
-    def straight(self, hand):
+    def addAceAsOne(self, hand):
         #temporarily adds ace as 1
         for item in hand:
             if 14 in item:
-                hand.append([1, item[1]])
+                if [1, item[1]] not in hand:
+                    hand.append([1, item[1]])
+        return hand
 
+    def straight(self, hand):
         straightHand = []
         for j in range(len(hand)):
             if len(hand) > j+1:
@@ -271,14 +275,14 @@ class Poker:
                     if len(straightHand) == 0:
                         straightHand.append(hand[j])
                     straightHand.append(hand[j+1])
-
-                elif hand[j][0] != hand[j+1][0]:
-                    straightHand = []
                 
-                else:
+                elif hand[j][0] == hand[j+1][0]:
                     #for straight flushes make a new straight check without
                     #duplicate card evey time same number is found
-                    self.straight(hand[:j] + hand[j+1:])
+                    self.straight(hand[:j][:] + hand[j+1:][:])
+                
+                else:
+                    straightHand = []
 
                 if len(straightHand) == 5:
                     #checks if straight is straight flush
