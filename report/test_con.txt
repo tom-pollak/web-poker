@@ -78,10 +78,10 @@ username:
 	max length 25
 	alphanumeric and underscores
 password:
-	can’t be too similar to your other personal information.
+	can't be too similar to your other personal information.
 	must contain at least 8 characters.
-	can’t be a commonly used password.
-	can’t be entirely numeric.
+	can't be a commonly used password.
+	can't be entirely numeric.
 CSRF token used in sign up and log in process to prevent CSRF attacks
 all new users start with 1000 money
 passwords stored using strong hashing algorithm with salt    ---------
