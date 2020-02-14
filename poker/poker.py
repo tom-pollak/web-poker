@@ -141,11 +141,11 @@ class Cards:
         return convertHand
 
     def makeHandsMan(self):
-        self.__comCards = [[14, 2], [12, 1], [11, 2], [8, 1], [5, 2]]
+        self.__comCards = [[14, 2], [12, 1], [11, 2], [4, 1], [5, 2]]
         hands = [[
                 [4, 1], [1, 2] #first player hand
             ], [
-                [2, 1], [3, 1] #second player hand etc
+                [4, 1], [1, 2] #second player hand etc
             ], [
                 [2, 0], [13, 0]
         ]]
