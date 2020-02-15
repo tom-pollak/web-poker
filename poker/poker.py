@@ -190,7 +190,7 @@ class Poker:
         self.clash()
 
     def checkRank(self):
-        #determines whether cards are a pair of 3 of a kind
+        #determines whether cards are a pair or 3 of a kind
         def twoThree(pStrength2, pStrength3):
             if len(sameRank[0]) == 3:
                 return pStrength3
@@ -210,7 +210,7 @@ class Poker:
                     i+=1
             except IndexError:
                 pass
-            #if more than one card of same rank add to sameRAnl
+            #if more than one card of same rank add to sameRank
             if len(temp) > 1:
                 sameRank.append(temp[:])
 
@@ -231,7 +231,7 @@ class Poker:
                 else:
                     self.strength = twoThree(1, 3)
 
-        #put all cards from sameRank in 1d array
+        #put all cards from sameRank in 1D array
         temp = []
         for cards in sameRank:
             for card in cards:
@@ -352,8 +352,6 @@ class Poker:
                     #if players in split it adds the split array instead
                     self.playerWin.append(players)
                     added = True
-                    #deletes the added split array otherwise it would cause duplicates
-                    #self.split.remove(players)
             if not added:
                 self.playerWin.append([player])
 
