@@ -29,9 +29,9 @@ class Player:
     def money(self):
         return self.__money
     
-    def increaseMoney(self, increaseAmount):
-        self.__money += increaseAmount
-        self.__moneyWon += increaseAmount
+    def increaseMoney(self, amount):
+        self.__money += amount
+        self.__moneyWon += amount
 
     @property
     def hand(self):
@@ -94,7 +94,6 @@ class Cards:
     def __init__(self, players):
         TESTING = False #change for testing purposes
         self.__players = players
-        self.__playerHands = []
         self.__deck = []
         self.__comCards = []
         self.makeDeck()
@@ -170,26 +169,26 @@ class Poker:
     def playerWin(self):
         return self.__playerWin
     
-    @playerWin.setter
-    def playerWin(self, playerWin):
-        self.__playerWin = playerWin
+    #@playerWin.setter
+    #def playerWin(self, playerWin):
+        #self.__playerWin = playerWin
 
     def handStrength(self):
         for player in self.players:
             self.orderHand = []
             self.strength = 0
-            self.hand = player.hand + self.C.comCards
-            self.hand.sort(reverse=True)
-            self.checkRank()
-            self.flush(self.hand, 5)
-            tempHand = self.addAceAsOne(self.hand)
+            hand = player.hand + self.C.comCards
+            hand.sort(reverse=True)
+            self.checkRank(hand)
+            self.flush(hand, 5)
+            tempHand = self.addAceAsOne(hand)
             self.straight(tempHand)
             player.handStrength = self.strengthList[self.strength]
             self.win.append([self.strength, player, self.orderHand[:]])
         self.win.sort(key = lambda x: x[0], reverse=True)
         self.clash()
 
-    def checkRank(self):
+    def checkRank(self, hand):
         #determines whether cards are a pair or 3 of a kind
         def twoThree(pStrength2, pStrength3):
             if len(sameRank[0]) == 3:
@@ -336,7 +335,13 @@ class Poker:
     def splitWork(self, repeated):
         for a in range(0, len(repeated), 2):
             if a - 1 >= 0:
+                #the players are added in pairs, so if a player is the same as
+                #a player in the previous iteration then all 3 players in the
+                #current and previous iteration have the same strength hand.
+                #So the other player in the current iteration is appended to the
+                #previous iteration array
                 if repeated[a] == repeated[a-1]:
+                    #-1 is the index of the last item in the array
                     self.split[-1].append(repeated[a+1])
                 else:
                     self.split.append([repeated[a], repeated[a+1]])
@@ -363,13 +368,11 @@ class Poker:
 class Game:
     def __init__(self, minimumBet, dealer, tableGroup, table, playersInGame):
         self.minimumBet = minimumBet
-        self.dealer = dealer
+        self.dealer = self.turnIndex = self.better = dealer
         self.tableGroup = tableGroup
         self.table = table
         self.players = playersInGame
         self.winners = []
-        self.turnIndex = self.dealer
-        self.better = self.dealer
         self.noOfPlayers = len(self.players)
         self.comCount = 0
         self.pot = 0
