@@ -169,9 +169,9 @@ class Poker:
     def playerWin(self):
         return self.__playerWin
     
-    #@playerWin.setter
-    #def playerWin(self, playerWin):
-        #self.__playerWin = playerWin
+    @playerWin.setter
+    def playerWin(self, playerWin):
+        self.__playerWin = playerWin
 
     def handStrength(self):
         for player in self.players:
@@ -200,11 +200,11 @@ class Poker:
         i = 0
         sameRank = []
         while i < 6:
-            temp = [self.hand[i]]
+            temp = [hand[i]]
             try:
                 #adds cards of same rank to temp
-                while self.hand[i][0] == self.hand[i+1][0]:
-                    temp.append(self.hand[i+1])
+                while hand[i][0] == hand[i+1][0]:
+                    temp.append(hand[i+1])
                     i+=1
                 else:
                     i+=1
@@ -239,7 +239,7 @@ class Poker:
                 temp.append(card)
 
         #add cards not included in sameRank
-        for card in self.hand:
+        for card in hand:
             if card not in temp:
                 temp.append(card)
         #make orderHand
@@ -363,6 +363,7 @@ class Poker:
                 self.playerWin.append([player])
 
         #remove duplicate split arrays
+        print('playerWin', self.playerWin)
         self.playerWin = [tuple(x) for x in self.playerWin]
         self.playerWin = list(dict.fromkeys(self.playerWin))
         self.playerWin = [list(x) for x in self.playerWin]
