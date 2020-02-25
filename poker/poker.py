@@ -189,7 +189,8 @@ class Poker:
         self.clash()
 
     def checkRank(self, hand):
-        #determines whether cards are a pair or 3 of a kind
+        #determines whether cards are a pair or 3 of a kind,
+        #alternatively a two pair or fullhouse
         def twoThree(pStrength2, pStrength3):
             if len(sameRank[0]) == 3:
                 return pStrength3
@@ -218,17 +219,18 @@ class Poker:
         sameRank.sort(key = lambda x: len(x), reverse=True)
         sameRank = sameRank[:2]
         if len(sameRank) != 0:
-            #if 4 cards, four of a kind
+            #four of a kind
             if len(sameRank[0]) == 4:
-                sameRank = sameRank[:1]
+                sameRank = sameRank[0]
                 self.strength = 7
 
+            #two pair or full house
+            elif len(sameRank) == 2:
+                self.strength = twoThree(2, 6)
+            
+            #pair or three of a kind
             else:
-                #if two pair or full house
-                if len(sameRank) == 2:
-                    self.strength = twoThree(2, 6)
-                else:
-                    self.strength = twoThree(1, 3)
+                self.strength = twoThree(1, 3)
 
         #put all cards from sameRank in 1D array
         temp = []
@@ -247,10 +249,10 @@ class Poker:
         #iterates over all 4 suits
         for i in range(4):
             flush = []
-            for item in hand:
-                #appends item to flush array if same suit
-                if item[1] == i:
-                    flush.append(item)
+            for card in hand:
+                #appends card to flush array if same suit
+                if card[1] == i:
+                    flush.append(card)
 
             if len(flush) == 5 and self.strength < pStrength:
                 self.strength = pStrength
@@ -258,10 +260,10 @@ class Poker:
 
     def addAceAsOne(self, hand):
         #temporarily adds ace as 1
-        for item in hand:
-            if 14 in item:
-                if [1, item[1]] not in hand:
-                    hand.append([1, item[1]])
+        for card in hand:
+            if 14 in card:
+                if [1, card[1]] not in hand:
+                    hand.append([1, card[1]])
         return hand
 
     def straight(self, hand):
