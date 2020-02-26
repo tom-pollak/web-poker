@@ -92,7 +92,7 @@ class Player:
 
 class Cards:
     def __init__(self, players):
-        TESTING = False #change for testing purposes
+        TESTING = True #change for testing purposes
         self.__players = players
         self.__deck = []
         self.__comCards = []
@@ -140,11 +140,11 @@ class Cards:
         return convertHand
 
     def makeHandsMan(self):
-        self.__comCards = [[14, 2], [12, 1], [11, 2], [4, 1], [5, 2]]
+        self.__comCards = [[13, 3], [13, 1], [10, 1], [8, 1], [4, 0]]
         hands = [[
-                [4, 1], [1, 2] #first player hand
+                [4, 1], [4, 2] #first player hand
             ], [
-                [4, 1], [1, 2] #second player hand etc
+                [5, 1], [1, 2] #second player hand etc
             ], [
                 [2, 0], [13, 0]
         ]]
