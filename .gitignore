@@ -1,4 +1,3 @@
-project/settings.py
 db.sqlite3
 package*.json
 Pipfile*
