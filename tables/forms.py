@@ -14,5 +14,5 @@ class TableForm(forms.ModelForm):
         labels = {
             'name': 'Name',
             'buyIn': 'Buy in',
-            'maxNoPlayers': 'Maximum number of players'
+            'maxNoOfPlayers': 'Maximum number of players'
         }
