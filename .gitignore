@@ -1,3 +1,4 @@
 db.sqlite3
 package*.json
 Pipfile*
+report/videos/

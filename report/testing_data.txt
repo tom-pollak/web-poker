@@ -43,10 +43,10 @@
                 [3, 0], [4, 0]
         ]]
 
-12.
+11.
         self.__comCards = [[7, 0], [7, 1], [13, 2], [6, 2], [2, 2]]
         hands = [[
-                [11, 2], [3, 1] #first player hand
+                [11, 2], [3, 1] #first player hand swap w/ p3
             ], [
                 [11, 2], [5, 2] #second player hand etc
             ], [
@@ -71,5 +71,5 @@
             ], [
                 [13, 3], [4, 2] #second player hand etc
             ], [
-                [3, 1], [4, 3]
+                [2, 1], [4, 3]
         ]]
