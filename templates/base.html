@@ -6,6 +6,7 @@
 {% url 'index' as index %}
 {% url 'leaderboard' as leaderboard %}
 {% url 'profile' username=user.username as profile %}
+{% url 'pokerRules' as pokerRules %}
 
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
   <div class="container-fluid">
@@ -15,6 +16,9 @@
         </li>
         <li class="{% active request leaderboard %}">
             <a class="nav-link" href="{{ leaderboard }}">Leaderboard</a>
+        </li>
+        <li class="{% active request pokerRules %}">
+            <a class="nav-link" href="{{ pokerRules }}">How to play</a>
         </li>
       </ul>
       

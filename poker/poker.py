@@ -77,6 +77,13 @@ class Player:
 
     def fold(self):
         self.__playerIn = False
+    
+    def newRound(self):
+        self.__playerIn = True
+        self.__callAmount = self.__putIn = 0
+        self.__moneyWon = 0
+        self.__hand = []
+        self.__handStrength = ''
 
     def call(self, moneyToPutIn):
         if self.__money > moneyToPutIn:
@@ -92,7 +99,7 @@ class Player:
 
 class Cards:
     def __init__(self, players):
-        TESTING = True #change for testing purposes
+        TESTING = False #change for testing purposes
         self.__players = players
         self.__deck = []
         self.__comCards = []
@@ -140,14 +147,15 @@ class Cards:
         return convertHand
 
     def makeHandsMan(self):
-        self.__comCards = [[13, 3], [13, 1], [10, 1], [8, 1], [4, 0]]
+        self.__comCards = [[5, 3], [7, 1], [13, 2], [6, 2], [11, 2]]
         hands = [[
-                [4, 1], [4, 2] #first player hand
+                [7, 3], [7, 0] #first player hand
             ], [
-                [5, 1], [1, 2] #second player hand etc
+                [13, 3], [4, 2] #second player hand etc
             ], [
-                [2, 0], [13, 0]
+                [2, 1], [4, 3]
         ]]
+
 
         for player, hand in zip(self.__players, hands):
             player.hand = hand
@@ -280,6 +288,7 @@ class Poker:
                 elif hand[j][0] == hand[j+1][0]:
                     #for straight flushes make a new straight check without
                     #duplicate card evey time same number is found
+                    self.straight(hand[:j+1][:] + hand[j+2:][:])
                     self.straight(hand[:j][:] + hand[j+1:][:])
                 
                 else:
@@ -288,7 +297,7 @@ class Poker:
                 if len(straightHand) == 5:
                     #checks if straight is straight flush
                     self.flush(straightHand, 8)
-                    if self.strength <= 4:
+                    if self.strength < 4:
                         self.strength = 4
                         self.orderHand = straightHand
 
@@ -363,10 +372,10 @@ class Poker:
                 self.playerWin.append([player])
 
         #remove duplicate split arrays
-        print('playerWin', self.playerWin)
         self.playerWin = [tuple(x) for x in self.playerWin]
         self.playerWin = list(dict.fromkeys(self.playerWin))
         self.playerWin = [list(x) for x in self.playerWin]
+        print('playerWin', self.playerWin)
 
 class Game:
     def __init__(self, minimumBet, dealer, tableGroup, table, playersInGame):
@@ -630,12 +639,14 @@ class Game:
         sortedPlayers = sorted(players, key = lambda x: x.putIn)
         winners.sort(key = lambda x: x.putIn)
         if len(winners) != 0:
+            money = sortedPlayers[0].putIn
+
             #money given out equal to the minimum players putIn
             #or pot if in the oddMoney recursion
-            money = sortedPlayers[0].putIn
-            if money > pot:
-                money = pot
             moneyMade = money * len(sortedPlayers)
+            if moneyMade > pot:
+                moneyMade = pot
+                money = pot // len(sortedPlayers)
             
             #if the money cannot be shared equally
             oddMoney = moneyMade % len(winners)
@@ -648,7 +659,7 @@ class Game:
                 print('removing winner:', players[a].username)
                 tempWin = winners[:]
                 tempWin.remove(players[a])
-                pot += self.distributeMoney(players[:], tempWin, oddMoney) 
+                pot += self.distributeMoney(players[:], tempWin, oddMoney)
 
             #decrease each players putIn by the min players putIn
             #increase each winners by the (min players putIn * players)// no winners
@@ -676,6 +687,7 @@ class Game:
                     self.winners.append(player)
             print('winners', self.winners)
             self.pot = self.distributeMoney(self.players[:], self.winners[:], self.pot)
+            print(self.pot)
             self.updateDBMoney()
             a+=1
         self.makeWinnerMessage()
@@ -691,6 +703,7 @@ class Game:
             if a == 0:
                 self.blinds()
             message = self.makeComCards()
+            self.sendCards()
             if self.checkNotAllFolded():
                 if self.checkMultiplePlayersIn():
                     self.sendComCards(message)
@@ -704,6 +717,7 @@ class Game:
                         self.nextTurn()
                 elif a == 3:
                     self.sendComCards(message)
+                    self.sendCards()
         self.winner()
 
 def addPlayer(room, table, username):
@@ -712,7 +726,29 @@ def addPlayer(room, table, username):
     player.money -= table.buyIn
     player.save()
 
+def makePlayerOrder(playersInGame, players):
+    for player in playersInGame:
+        #sets all the Player objects back to their base values
+        player.newRound()
+
+        #check whether player in playersInGame is in players
+        #if not, the player has left
+        if not any(x for x in players if x.user.username == player.username):
+            playersInGame.remove(player)
+
+    for newPlayer in players:
+        #check whether Player object is not already in playersInGame
+        #if so, new player has joined the table
+        if newPlayer.moneyInTable > 0 and not any(x for x in playersInGame if x.username == newPlayer.user.username):
+            P = Player(newPlayer.user.username, newPlayer.moneyInTable)
+            print(P.username, 'has joined')
+            playersInGame.append(P)
+
+    print('playersInGame:', playersInGame)
+
 def startGame(table):
+    TESTING = False
+    playersInGame = []
     dealer = 0
     tableGroup = 'table_' + str(table.pk)
     while True:
@@ -721,7 +757,7 @@ def startGame(table):
         while table.getNoOfPlayers() == 1:
             table.refresh_from_db()
             time.sleep(0.2)
-        
+            
         #if single player leaves table before anyone joins
         if table.getNoOfPlayers() == 0:
             print('player left, not in game')
@@ -730,17 +766,15 @@ def startGame(table):
             sys.exit()
 
         #gets players in table
-        playersInGame = []
         players = Players.objects.filter(room_id=table.id) #table group is the primary key of Room
-        #creates an array of Player objects
-        for player in players:
-            if player.moneyInTable > 0:
-                playersInGame.append(Player(player.user.username, player.moneyInTable))
-        print('playersInGame:', playersInGame)
-        dealer = (dealer+1)%len(playersInGame)
+        makePlayerOrder(playersInGame, players)
+
+        if not TESTING:
+            dealer = (dealer+1)%len(playersInGame)
+            
         #starts game
         Game((table.buyIn)//100, dealer, tableGroup, table, playersInGame)
-        time.sleep(1)
+        time.sleep(0.4)
 
 def main(pk, username):
     table = Table.objects.get(pk=pk)
