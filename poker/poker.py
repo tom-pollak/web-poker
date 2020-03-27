@@ -8,8 +8,6 @@ from accounts.models import CustomUser
 import sys
 from datetime import datetime, timezone
 
-#TODO
-#re buy in
 
 class Player:
     def __init__(self, username, money):
