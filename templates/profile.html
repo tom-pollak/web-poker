@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% block pageContent %}
-    {% if user.username == player.username %}
-        <h3>Your profile</h3><br />
-    {% endif %}
-    <p>user: {{ player.username }}</p>
-    <p>money: {{ player.money }}</p>
+  {% if user.username == player.username %}
+    <h3>Your profile</h3><br />
+  {% endif %}
+  <p>user: {{ player.username }}</p>
+  <p>money: {{ player.money }}</p>
 {% endblock %}

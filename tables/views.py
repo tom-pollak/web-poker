@@ -38,4 +38,4 @@ def createTable(request):
         form = TableForm()
 
     context = {'form': form}
-    return render(request, 'tableForm.html', context)
+    return render(request, 'table-form.html', context)

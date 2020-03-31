@@ -373,7 +373,6 @@ class Poker:
         self.playerWin = [tuple(x) for x in self.playerWin]
         self.playerWin = list(dict.fromkeys(self.playerWin))
         self.playerWin = [list(x) for x in self.playerWin]
-        print('playerWin', self.playerWin)
 
 class Game:
     def __init__(self, minimumBet, dealer, tableGroup, table, playersInGame):

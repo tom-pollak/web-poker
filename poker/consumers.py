@@ -4,7 +4,6 @@ from .models import Players, Room
 from accounts.models import CustomUser
 from tables.models import Table
 import json
-#from .poker import main
 
 class PokerConsumer(WebsocketConsumer):
     #adds the player to the poker group to recieve the community cards and bets
@@ -68,8 +67,7 @@ class PokerConsumer(WebsocketConsumer):
                 {
                     'type': 'chatMessage',
                     'text': message
-                }
-                )
+                })
 
         elif player.turn:
             player.turn = False

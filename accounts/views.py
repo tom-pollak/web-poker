@@ -6,7 +6,7 @@ from .models import CustomUser
 from .forms import CustomUserCreationForm
 
 class SignUp(generic.CreateView):
-    form_class = CustomUserCreationForm #variables have to be underscores
+    form_class = CustomUserCreationForm #variables must be underscores
     success_url = reverse_lazy('login')
     template_name = 'signup.html'
 
