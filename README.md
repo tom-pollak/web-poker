@@ -10,6 +10,7 @@ pipenv shell
 pipenv install -r requirements.txt  
 
 > docker run -p 6379:6379 -d redis:2.8  
+python manage.py makemigrations  
 python manage.py migrate  
 python manage.py createsuperuser  
 
