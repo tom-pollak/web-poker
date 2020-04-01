@@ -4,7 +4,7 @@ prerequisites: docker, python 3.x, pip
 
 Installation  
 > pip install pipenv  
-git clone https://github.com/ZY-KY/web_poker.git  
+git clone https://github.com/tom-pollak/web_poker.git  
 cd web_poker  
 pipenv shell  
 pipenv install -r requirements.txt  
