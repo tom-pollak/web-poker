@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'accounts',
     'crispy_forms',
     'rest_framework',
-    'django_heroku'
 ]
 
 MIDDLEWARE = [
