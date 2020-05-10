@@ -1,4 +1,0 @@
-account settings
-change tier and store payment info
-add automated testing
-community cards come up 1 at a time if folded
