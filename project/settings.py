@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'leaderboard',
     'accounts',
     'crispy_forms',
-    'rest_framework'
+    'rest_framework',
+    'django_heroku'
 ]
 
 MIDDLEWARE = [
