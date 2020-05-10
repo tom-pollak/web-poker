@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -156,3 +157,5 @@ REST_FRAMEWORK = {
     'PAGINATE_BY': 10
 }
 DOCKER_HOST = '192.168.99.100:2376'
+
+django_heroku.settings(locals())
