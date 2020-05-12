@@ -3,7 +3,7 @@ services:
     web:
         build: .
         command: python /code/manage.py cleartables
-        command: gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker  --bind 0.0.0.0:8000
+        command: gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
         volumes:
             - .:/code
         ports:
@@ -23,4 +23,3 @@ services:
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=marscheesepepsi
             - POSTGRES_DB=db
-            - POSTGRES_HOST_AUTH_METHOD=trust
