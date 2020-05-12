@@ -1,0 +1,26 @@
+version: "3.8"
+services:
+    web:
+        build: .
+        command: python /code/manage.py cleartables
+        command: gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker  --bind 0.0.0.0:8000
+        volumes:
+            - .:/code
+        ports:
+            - 80:8000
+        depends_on:
+            - db
+            - redis
+    redis:
+        image: "redis:5"
+        ports:
+            - "6379:6379"
+    db:
+        image: "postgres:12-alpine"
+        ports:
+            - "5432:5432"
+        environment:
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=marscheesepepsi
+            - POSTGRES_DB=db
+            - POSTGRES_HOST_AUTH_METHOD=trust

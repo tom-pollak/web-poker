@@ -20,14 +20,3 @@ class Command(BaseCommand):
         thread = threading.Thread(target=self.removeTables, daemon=True)
         thread.start()
         call_command('runserver', '--noreload', addrport)
-
-    def removeTables(self):
-        while True:
-            tables = Table.objects.all()
-            for table in tables:
-                timeDiff = datetime.now(timezone.utc) - table.lastUsed
-                timeDiff = timeDiff.total_seconds()/60
-                if timeDiff > 15 and table.getNoOfPlayers() == 0:
-                    print('deleting %s, not used for: %d minutes' % (table.name, timeDiff))
-                    table.delete()
-            time.sleep(10)

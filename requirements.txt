@@ -9,6 +9,7 @@ automat==0.8.0
 cffi==1.13.0
 channels-redis==2.4.0
 channels==2.3.0
+click==7.1.2
 constantly==15.1.0
 cryptography==2.8
 daphne==2.3.0
@@ -19,17 +20,25 @@ django-heroku==0.3.1
 django==3.0.3
 djangorestframework==3.10.3
 gunicorn==20.0.4
+h11==0.9.0
 hiredis==1.0.0
+httptools==0.1.1 ; sys_platform != 'win32' and sys_platform != 'cygwin' and platform_python_implementation != 'PyPy'
 hyperlink==19.0.0
 idna==2.8
 incremental==17.5.0
 msgpack==0.6.2
 psycopg2-binary==2.8.5
+psycopg2==2.8.5
 pycparser==2.19
 pyhamcrest==1.9.0
+python-dotenv==0.13.0
 pytz==2019.3
 six==1.12.0
 sqlparse==0.3.0
 twisted==19.7.0
 txaio==18.8.1
+uvicorn==0.11.5
+uvloop==0.14.0 ; sys_platform != 'win32' and sys_platform != 'cygwin' and platform_python_implementation != 'PyPy'
+websockets==8.1
 whitenoise==5.0.1
+zope.interface==5.1.0

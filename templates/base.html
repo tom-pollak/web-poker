@@ -21,7 +21,7 @@
             <a class="nav-link" href="{{ pokerRules }}">How to play</a>
         </li>
       </ul>
-      
+
     <ul class="nav navbar-nav navbar-right">
       <li class="{% active request profile %}">
           <a class="nav-link" href="{{ profile }}">{{ user.get_username }}</a>
@@ -34,8 +34,8 @@
 
 <script>
   {% if user.is_authenticated %}
-    var webSocket = new WebSocket(
-      'ws://' + window.location.host + '/ws/user/' + '{{ user.get_username }}' + '/');
+    var webSocket = new ReconnectingWebSocket(
+      'wss://' + window.location.host + '/ws/user/' + '{{ user.get_username }}' + '/');
     webSocket.binaryType = 'arraybuffer';
 
     webSocket.onmessage = function(e) {

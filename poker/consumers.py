@@ -15,13 +15,13 @@ class PokerConsumer(WebsocketConsumer):
         print('player:', self.username)
         self.tableGroup = 'table_' + self.pk
         self.room = Room.objects.get(table_id=self.pk)
-        self.censoredList = getCensoredWords()
+        #self.censoredList = getCensoredWords()
         #group socket
         async_to_sync(self.channel_layer.group_add)(
             self.tableGroup,
             self.channel_name
         )
-        
+
         #unique socket
         async_to_sync(self.channel_layer.group_add)(
             str(self.username),
@@ -45,7 +45,7 @@ class PokerConsumer(WebsocketConsumer):
         self.player.money += playerInstance.moneyInTable
         self.player.save()
         playerInstance.delete()
-        
+
         #if noone left in table delete table
         self.room.refresh_from_db()
         players = Players.objects.filter(room=self.room)
@@ -60,7 +60,7 @@ class PokerConsumer(WebsocketConsumer):
             message = textDataJson['message']
             if message != '':
                 message = self.username + ': ' + message
-                message = censor(message, self.censoredList)
+                # message = censor(message, self.censoredList)
 
                 async_to_sync(self.channel_layer.group_send)(
                 self.tableGroup,
@@ -140,7 +140,7 @@ class PokerConsumer(WebsocketConsumer):
 
 def getCensoredWords():
     censoredList = []
-    path = 'C:\\Users\\Tom\\Desktop\\projects\\web_poker\\censored-words.txt'
+    path = '../censored-words.txt'
     with open(path, 'r') as censoredWords:
         for word in censoredWords:
             w = word.replace('\n', '')

@@ -69,10 +69,10 @@
   var pk = {{ table.pk }};
   hideButton('buttons')
 
-  var pokerSocket = new WebSocket(
-    'ws://' + window.location.host +
+  var pokerSocket = new ReconnectingWebSocket(
+    'wss://' + window.location.host +
     '/ws/tables/' + pk + '/');
-  
+
   pokerSocket.onmessage = function(e) {
     var data = JSON.parse(e.data);
     var message = data['message'];
@@ -111,7 +111,7 @@
       pokerLog.value = (log + '\n' + showdown + '\n') +
       pokerLog.value;
       document.getElementById('pot').innerHTML = ('Pot: 0');
-    
+
     } else if (message == 'message') {
       var text = data['text'];
       var chatLog = document.querySelector('#chat-log');
