@@ -38,18 +38,16 @@
     var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
     var webSocket = new WebSocket(
       ws_scheme + '://' + window.location.host + '/ws/user/' + '{{ user.get_username }}' + '/');
-    console.log('websocket base', webSocket);
     webSocket.binaryType = 'arraybuffer';
 
     webSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);
       var totalMoney = data['money'];
-      console.log(totalMoney);
       document.getElementById('money').innerHTML = totalMoney;
     }
 
     webSocket.onclose = function(e) {
-      console.error('Chat socket closed unexpectedly');
+      console.error('Chat socket closed');
     };
   {% endif %}
 </script>
