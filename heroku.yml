@@ -1,5 +1,7 @@
 build:
   docker:
     web: Dockerfile
-run:
-  web: gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:80
+release:
+  image: web
+  command:
+    - django-admin migrate --noinput
