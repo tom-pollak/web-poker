@@ -4,3 +4,5 @@ Pipfile*
 report/videos/
 .env
 staticfiles/
+migrations/
+__pycache__/
