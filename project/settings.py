@@ -25,10 +25,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'd938i2060c)_!q16$fg6@*+@4tbuzd&cc5cqg-4hi^%p@q$feh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    '*'
+    'localhost',
+    '.herokuapp.com'
 ]
 
 
@@ -107,7 +108,8 @@ CHANNEL_LAYERS = {
 }
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
-db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=500, ssl_require=True)
+db_from_env = dj_database_url.config(
+    default=DATABASE_URL, conn_max_age=500, ssl_require=True)
 DATABASES['default'].update(db_from_env)
 
 
