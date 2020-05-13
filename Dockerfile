@@ -14,5 +14,5 @@ COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 COPY . /code/
 
-CMD ["python /code/manage.py cleartables", "gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker"]
+CMD gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker
 
