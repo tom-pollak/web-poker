@@ -89,8 +89,26 @@ dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
 
-DATABASES = {}
-DATABASES['default'] = dj_database_url.config(conn_max_age=600)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
+
+ASGI_APPLICATION = 'project.routing.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [os.environ.get('REDIS_URL')],
+        },
+    },
+}
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+db_from_env = dj_database_url.config(default=DATABASE_URL, conn_max_age=500, ssl_require=True)
+DATABASES['default'].update(db_from_env)
 
 
 # Password validation
@@ -141,15 +159,6 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
-ASGI_APPLICATION = 'project.routing.application'
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('redis', 6379)],
-        },
-    },
-}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -160,4 +169,5 @@ REST_FRAMEWORK = {
 DOCKER_HOST = '192.168.99.100:2376'
 
 django_heroku.settings(locals())
-del DATABASES['default']['OPTIONS']['sslmode']
+if os.path.isfile(dotenv_file):
+    del DATABASES['default']['OPTIONS']['sslmode']

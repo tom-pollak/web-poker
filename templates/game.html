@@ -45,7 +45,7 @@
 
 
 
-<script>
+<script src="{% static 'reconnecting-websocket.js' %}">
   function showButton(button) {
     var buttonToggle = document.getElementById(button);
     buttonToggle.style.display = "block";
@@ -70,7 +70,7 @@
   hideButton('buttons')
 
   var pokerSocket = new ReconnectingWebSocket(
-    'wss://' + window.location.host +
+    ws_scheme + '://' + window.location.host +
     '/ws/tables/' + pk + '/');
 
   pokerSocket.onmessage = function(e) {

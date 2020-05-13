@@ -27,21 +27,22 @@
 <script>
   document.getElementById('reset-money').style.display = "none";
   {% if user.is_authenticated %}
+    console.log(webSocket)
     webSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);
       var totalMoney = data['money'];
       var tables = data['tables'];
-      
+
       document.getElementById('money').innerHTML = totalMoney;
       showReset(totalMoney);
 
       for (i=0; i < tables.length; i++) {
         console.log(tables)
         //if (tables[i].room != null) {
-        document.getElementById(tables[i].name + '-noOfPlayers').innerHTML = 
+        document.getElementById(tables[i].name + '-noOfPlayers').innerHTML =
         'Players: ' + tables[i].noOfPlayers + '/' + tables[i].maxNoOfPlayers;
         //} else {
-          //document.getElementById(tables[i].name + '-noOfPlayers').innerHTML = 
+          //document.getElementById(tables[i].name + '-noOfPlayers').innerHTML =
           //'Players: 0/' + tables[i].maxNoOfPlayers;
         //}
       }

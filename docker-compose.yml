@@ -10,8 +10,8 @@ services:
             - 80:8000
         depends_on:
             - db
-            - redis
-    redis:
+            - redis_db
+    redis_db:
         image: "redis:5"
         ports:
             - "6379:6379"
@@ -20,6 +20,4 @@ services:
         ports:
             - "5432:5432"
         environment:
-            - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=marscheesepepsi
             - POSTGRES_DB=db
