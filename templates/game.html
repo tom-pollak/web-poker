@@ -68,7 +68,7 @@
   var pk = {{ table.pk }};
   hideButton('buttons')
 
-  var pokerSocket = new ReconnectingWebSocket(
+  var pokerSocket = new WebSocket(
     ws_scheme + '://' + window.location.host +
     '/ws/tables/' + pk + '/');
 
