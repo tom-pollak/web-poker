@@ -24,4 +24,4 @@ class Table(models.Model):
     maxNoOfPlayers = models.IntegerField(
         validators=[MinValueValidator(2), MaxValueValidator(8)])
     createdAt = models.DateTimeField(auto_now_add=True)
-    lastUsed = models.DateTimeField(default=datetime.now)
+    lastUsed = models.DateTimeField(auto_now_add=True)
