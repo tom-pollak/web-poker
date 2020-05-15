@@ -1,6 +1,6 @@
 FROM python:3
 
-ARG pass
+ARG PASS
 
 ENV PYTHONUNBUFFERED 1
 RUN mkdir /code

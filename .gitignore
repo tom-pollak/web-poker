@@ -1,8 +1,5 @@
 db.sqlite3
 package*.json
 Pipfile*
-report/videos/
 .env
 staticfiles/
-migrations/
-__pycache__/
