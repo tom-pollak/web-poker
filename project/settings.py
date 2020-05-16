@@ -109,7 +109,7 @@ CHANNEL_LAYERS = {
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 db_from_env = dj_database_url.config(
-    default=DATABASE_URL, ssl_require=True)
+    default=DATABASE_URL, ssl_require=True, conn_max_age=20)
 DATABASES['default'].update(db_from_env)
 
 
@@ -171,6 +171,8 @@ REST_FRAMEWORK = {
 DOCKER_HOST = '192.168.99.100:2376'
 
 django_heroku.settings(locals())
+print(locals())
+print(django_heroku.settings)
 
 if os.path.isfile(dotenv_file):
     del DATABASES['default']['OPTIONS']['sslmode']
