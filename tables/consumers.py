@@ -7,9 +7,11 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 import time
 from poker.consumers import Players
+from django.db import close_old_connections close_old_connections
 
 import json
 import threading
+
 
 class MoneyConsumer(WebsocketConsumer):
     def connect(self):
@@ -17,11 +19,13 @@ class MoneyConsumer(WebsocketConsumer):
         self.username = self.scope['url_route']['kwargs']['username']
         self.player = CustomUser.objects.get(username=self.username)
         self.stopEvent = threading.Event()
-        self.thread = threading.Thread(target=self.checkMoney, args=(self.stopEvent,), daemon=True)
+        self.thread = threading.Thread(
+            target=self.checkMoney, args=(self.stopEvent,), daemon=True)
         self.thread.start()
 
     def disconnect(self, closeCode):
         self.stopEvent.set()
+        close_old_connections()
 
     def checkMoney(self, stopEvent):
         while not stopEvent.is_set():
@@ -39,7 +43,7 @@ class MoneyConsumer(WebsocketConsumer):
             self.tables = Table.objects.all()
             self.serializedTables = TableSerializer(self.tables, many=True)
             self.tableJSON = JSONRenderer().render(self.serializedTables.data)
-            
+
             self.send(text_data=json.dumps({
                 'money': self.totalMoney,
                 'moneyInTable': self.moneyInTable,

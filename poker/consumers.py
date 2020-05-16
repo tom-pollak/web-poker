@@ -4,10 +4,12 @@ from .models import Players, Room
 from accounts.models import CustomUser
 from tables.models import Table
 import json
+from django.db import close_old_connections close_old_connections
+
 
 class PokerConsumer(WebsocketConsumer):
-    #adds the player to the poker group to recieve the community cards and bets
-    #adds the player to a unique group to recieve his cards
+    # adds the player to the poker group to recieve the community cards and bets
+    # adds the player to a unique group to recieve his cards
     def connect(self):
         self.pk = self.scope['url_route']['kwargs']['pk']
         self.player = self.scope['user']
@@ -16,22 +18,22 @@ class PokerConsumer(WebsocketConsumer):
         self.tableGroup = 'table_' + self.pk
         self.room = Room.objects.get(table_id=self.pk)
         #self.censoredList = getCensoredWords()
-        #group socket
+        # group socket
         async_to_sync(self.channel_layer.group_add)(
             self.tableGroup,
             self.channel_name
         )
 
-        #unique socket
+        # unique socket
         async_to_sync(self.channel_layer.group_add)(
             str(self.username),
             self.channel_name
         )
-        #accepts all communication with web socket
+        # accepts all communication with web socket
         self.accept()
 
     def disconnect(self, closeCode):
-        #disconnects from group sockets
+        # disconnects from group sockets
         async_to_sync(self.channel_layer.group_discard)(
             self.tableGroup,
             self.channel_name
@@ -40,17 +42,18 @@ class PokerConsumer(WebsocketConsumer):
             str(self.username),
             self.channel_name
         )
-        #update player money
+        # update player money
         playerInstance = Players.objects.get(user=self.player)
         self.player.money += playerInstance.moneyInTable
         self.player.save()
         playerInstance.delete()
 
-        #if noone left in table delete table
+        # if noone left in table delete table
         self.room.refresh_from_db()
         players = Players.objects.filter(room=self.room)
         if len(players) == 0:
             self.room.delete()
+        close_old_connections()
 
     def receive(self, text_data):
         player = Players.objects.get(user=self.player)
@@ -63,11 +66,11 @@ class PokerConsumer(WebsocketConsumer):
                 # message = censor(message, self.censoredList)
 
                 async_to_sync(self.channel_layer.group_send)(
-                self.tableGroup,
-                {
-                    'type': 'chatMessage',
-                    'text': message
-                })
+                    self.tableGroup,
+                    {
+                        'type': 'chatMessage',
+                        'text': message
+                    })
 
         elif player.turn:
             player.turn = False
@@ -96,7 +99,6 @@ class PokerConsumer(WebsocketConsumer):
             'message': message,
             'pot': pot,
         }))
-
 
     def playerTurn(self, event):
         message = 'It\'s your turn'
@@ -137,6 +139,7 @@ class PokerConsumer(WebsocketConsumer):
             'message': 'message',
             'text': text
         }))
+
 
 def getCensoredWords():
     censoredList = []
