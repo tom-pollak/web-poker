@@ -171,5 +171,6 @@ REST_FRAMEWORK = {
 DOCKER_HOST = '192.168.99.100:2376'
 
 django_heroku.settings(locals())
+
 if os.path.isfile(dotenv_file):
     del DATABASES['default']['OPTIONS']['sslmode']
