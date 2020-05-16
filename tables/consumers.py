@@ -7,7 +7,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 import time
 from poker.consumers import Players
-from django.db import close_old_connections close_old_connections
+from django.db import close_old_connections
 
 import json
 import threading

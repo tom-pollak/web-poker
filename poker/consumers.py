@@ -4,7 +4,7 @@ from .models import Players, Room
 from accounts.models import CustomUser
 from tables.models import Table
 import json
-from django.db import close_old_connections close_old_connections
+from django.db import close_old_connections
 
 
 class PokerConsumer(WebsocketConsumer):
