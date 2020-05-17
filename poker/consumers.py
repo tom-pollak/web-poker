@@ -56,6 +56,7 @@ class PokerConsumer(WebsocketConsumer):
         close_old_connections()
 
     def receive(self, text_data):
+        print('recived message')
         player = Players.objects.get(user=self.player)
         textDataJson = json.loads(text_data)
         action = textDataJson['action']
