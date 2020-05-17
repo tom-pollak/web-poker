@@ -29,13 +29,14 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     'localhost',
-    '.herokuapp.com'
+    '*.pollakpoker.live'
 ]
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'tables',
     'django_extensions',
-    'channels',
     'poker',
     'leaderboard',
     'accounts',

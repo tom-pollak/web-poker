@@ -5,9 +5,9 @@ from poker.consumers import PokerConsumer
 from tables.consumers import MoneyConsumer
 
 application = ProtocolTypeRouter({
-    #http to views is default
+    # http to views is default
     'websocket': AuthMiddlewareStack(URLRouter([
-        path('ws/user/<str:username>/', MoneyConsumer), 
+        path('ws/user/<str:username>/', MoneyConsumer),
         path('ws/tables/<str:pk>/', PokerConsumer),
-        ])),
+    ])),
 })
