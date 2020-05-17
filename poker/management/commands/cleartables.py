@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from poker.models import Players, Room
 from tables.models import Table
 import time
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 
 
 class Command(BaseCommand):
@@ -16,7 +16,9 @@ class Command(BaseCommand):
         # while True:
         tables = Table.objects.all()
         for table in tables:
-            timeDiff = datetime.now(timezone.utc) - table.lastUsed
+            timeDiff = datetime.combine(date.min, datetime.now(
+                timezone.utc)) - datetime.combine(date.min, table.lastUsed)
+            print(timeDiff)
             timeDiff = timeDiff.total_seconds()/60
             if timeDiff > 15 and table.getNoOfPlayers() == 0:
                 print('deleting %s, not used for: %d minutes' %
