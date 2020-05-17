@@ -98,6 +98,7 @@ DATABASES = {
 }
 
 ASGI_APPLICATION = 'project.routing.application'
+ASGI_THREADS = 5
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
