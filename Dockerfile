@@ -13,5 +13,5 @@ COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 COPY . /code/
 
-CMD gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker
+CMD bin/start-pgbouncer-stunnel gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker
 
