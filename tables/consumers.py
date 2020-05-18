@@ -31,7 +31,6 @@ class MoneyConsumer(WebsocketConsumer):
 
     def checkMoney(self, stopEvent):
         while not stopEvent.is_set():
-            print('should be called every second')
             self.player = CustomUser.objects.get(username=self.username)
             self.totalMoney = self.player.money
             self.moneyInTable = 0

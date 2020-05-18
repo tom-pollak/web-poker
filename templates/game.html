@@ -113,6 +113,7 @@
 
     } else if (message == 'message') {
       var text = data['text'];
+      console.log(text);
       var chatLog = document.querySelector('#chat-log');
       chatLog.value += (text + '\n');
       chatLog.scrollTop = chatLog.scrollHeight;
