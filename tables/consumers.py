@@ -24,11 +24,13 @@ class MoneyConsumer(WebsocketConsumer):
         self.thread.start()
 
     def disconnect(self, closeCode):
+        print('disconnectong from money consumer')
         self.stopEvent.set()
         close_old_connections()
 
     def checkMoney(self, stopEvent):
         while not stopEvent.is_set():
+            print('should be called every second')
             self.player = CustomUser.objects.get(username=self.username)
             self.totalMoney = self.player.money
             self.moneyInTable = 0
