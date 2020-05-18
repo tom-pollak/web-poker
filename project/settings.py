@@ -171,6 +171,9 @@ REST_FRAMEWORK = {
 }
 DOCKER_HOST = '192.168.99.100:2376'
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+
 django_heroku.settings(locals())
 
 print(django_heroku.settings(locals()))
