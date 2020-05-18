@@ -27,6 +27,7 @@ class MoneyConsumer(WebsocketConsumer):
         print('disconnectong from money consumer')
         self.stopEvent.set()
         close_old_connections()
+        print('finished disconnetction')
 
     def checkMoney(self, stopEvent):
         while not stopEvent.is_set():
@@ -46,9 +47,10 @@ class MoneyConsumer(WebsocketConsumer):
             self.serializedTables = TableSerializer(self.tables, many=True)
             self.tableJSON = JSONRenderer().render(self.serializedTables.data)
 
-            self.send(text_data=json.dumps({
-                'money': self.totalMoney,
-                'moneyInTable': self.moneyInTable,
-                'tables': json.loads(self.tableJSON),
-            }))
-            time.sleep(1)
+            if not stopEvent.is_set():
+                self.send(text_data=json.dumps({
+                    'money': self.totalMoney,
+                    'moneyInTable': self.moneyInTable,
+                    'tables': json.loads(self.tableJSON),
+                }))
+                time.sleep(1)
