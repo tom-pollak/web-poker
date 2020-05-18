@@ -98,7 +98,6 @@ DATABASES = {
 }
 
 ASGI_APPLICATION = 'project.routing.application'
-ASGI_THREADS = 5
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -111,6 +110,7 @@ CHANNEL_LAYERS = {
 DATABASE_URL = os.environ.get('DATABASE_URL')
 db_from_env = dj_database_url.config(
     default=DATABASE_URL, ssl_require=True)
+print(db_from_env)
 DATABASES['default'].update(db_from_env)
 
 
