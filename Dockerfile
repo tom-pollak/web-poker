@@ -13,5 +13,6 @@ COPY requirements.txt /code/
 RUN pip install -r requirements.txt
 COPY . /code/
 
-CMD gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker
+CMD python manage.py runserver
+#CMD gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker
 
