@@ -7,8 +7,8 @@ sudo: required
 deploy:
   provider: heroku
   script:
-      - heroku container:push web
-      - heroku container:release web
+      - heroku container:push web -a pollakpoker
+      - heroku container:release web -a pollakpoker
   after_script:
       - docker-compose down
   api_key:
