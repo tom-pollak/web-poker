@@ -1,3 +1,5 @@
+sudo: 'required'
+
 deploy:
   provider: heroku
   api_key:
@@ -6,3 +8,25 @@ deploy:
   on:
     repo: tom-pollak/web_poker
   skip_cleanup: 'true'
+
+services:
+    -docker
+
+env:
+    DOCKER_COMPOSE_VERSION: 1.25.5
+
+    before_install:
+        - sudo rm /usr/local/bin/docker-compose
+        - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+        - chmod +x docker-compose
+        - sudo mv docker-compose /usr/local/bin
+
+    before_script:
+        - docker-compose up -d --build
+
+    script:
+        - docker-compose exec users python manage.py test
+        - heroku container:push web
+
+    after_script:
+        - docker-compose down

@@ -12,7 +12,7 @@ class Command(BaseCommand):
         Players.objects.all().delete()
         Room.objects.all().delete()
         print('Tables cleared')
-
+        '''
         # while True:
         tables = Table.objects.all()
         for table in tables:
@@ -25,3 +25,4 @@ class Command(BaseCommand):
                       (table.name, timeDiff))
                 table.delete()
         time.sleep(10)
+        '''

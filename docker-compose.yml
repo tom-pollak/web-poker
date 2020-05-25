@@ -2,12 +2,14 @@ version: "3.8"
 services:
     web:
         build: .
-        command: python /code/manage.py cleartables
-        command: gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
+        # command: python manage.py cleartables
+        command: daphne project.asgi:application --port 8000 --bind 0.0.0.0 -v2
+        # command: python manage.py runserver 0.0.0.0:8000
+        # command: gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
         volumes:
             - .:/code
         ports:
-            - 80:8000
+            - "8000:8000"
         depends_on:
             - db
             - redis_db
@@ -18,8 +20,8 @@ services:
     db:
         image: "postgres:12-alpine"
         ports:
-            - "5432:5432"
+            - "5432"
         environment:
             - POSTGRES_DB=db
             - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=${PASS}
+            - POSTGRES_PASSWORD=localdjango

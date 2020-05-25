@@ -25,11 +25,16 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'd938i2060c)_!q16$fg6@*+@4tbuzd&cc5cqg-4hi^%p@q$feh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+dotenv_file = os.path.join(BASE_DIR, ".env")
+if os.path.isfile(dotenv_file):
+    dotenv.load_dotenv(dotenv_file)
+
+DEBUG = os.environ.get('DEBUG', 0)
 
 ALLOWED_HOSTS = [
-    'localhost',
-    '*.pollakpoker.live'
+    '*',
+    #'localhost',
+    #'*.pollakpoker.live'
 ]
 
 
@@ -86,16 +91,6 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-dotenv_file = os.path.join(BASE_DIR, ".env")
-if os.path.isfile(dotenv_file):
-    dotenv.load_dotenv(dotenv_file)
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 ASGI_APPLICATION = 'project.routing.application'
 CHANNEL_LAYERS = {
@@ -107,11 +102,12 @@ CHANNEL_LAYERS = {
     },
 }
 
+DATABASES = {}
 DATABASE_URL = os.environ.get('DATABASE_URL')
 db_from_env = dj_database_url.config(
     default=DATABASE_URL, ssl_require=True)
-print(db_from_env)
-DATABASES['default'].update(db_from_env)
+#print(db_from_env)
+DATABASES['default'] = db_from_env
 
 
 # Password validation
@@ -169,13 +165,12 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
     'PAGINATE_BY': 10
 }
-DOCKER_HOST = '192.168.99.100:2376'
+# DOCKER_HOST = '192.168.99.100:2376'
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
 
 django_heroku.settings(locals())
-
-print(django_heroku.settings(locals()))
 if os.path.isfile(dotenv_file):
     del DATABASES['default']['OPTIONS']['sslmode']
+else:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
