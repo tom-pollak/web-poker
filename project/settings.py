@@ -29,7 +29,8 @@ dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
 
-DEBUG = os.environ.get('DEBUG', 0)
+#DEBUG = os.environ.get('DEBUG', 0)
+DEBUG = True
 
 ALLOWED_HOSTS = [
     #'*',
