@@ -1,7 +1,11 @@
 # web_poker
-django poker web-app
+## poker web-app written in django
 
 Check out the website here: [pollakpoker.live](https://www.pollakpoker.live)
 
-See the local development version:
-[https://github.com/tom-pollak/web_poker_pre_deploy](https://github.com/tom-pollak/web_poker_pre_deploy)
+Prerequisites: Docker, Docker Compose
+
+run locally
+```
+docker-compose up
+```

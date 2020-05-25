@@ -32,9 +32,9 @@ if os.path.isfile(dotenv_file):
 DEBUG = os.environ.get('DEBUG', 0)
 
 ALLOWED_HOSTS = [
-    '*',
-    #'localhost',
-    #'*.pollakpoker.live'
+    #'*',
+    'localhost',
+    '*.pollakpoker.live'
 ]
 
 
