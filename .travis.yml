@@ -1,39 +1,22 @@
 language: python
 python:
-    - "3.7"
-
-sudo: 'required'
-
+- '3.7'
+sudo: required
 deploy:
-    provider: heroku
-    script:
-        - heroku container:push web
-        - heroku container:release web
-
-    after_script:
-        - docker-compose down
-
-    api_key:
-        secure: gVfzgkA/+S3+1Tl3Lq/yXD54tomXny+0f7xCbS4+MsM+hgytkh+0lPA+H7Flh5wmv6lxT5R//fv1S98mv1C0T5hCeQyrdWHIbINMUc/YThnqaaaIjJ54i0mtHleM/CSPMkFo3SC0NS6+ll2h+IlwAkE4WWmX/tAbskiIlG/0Mxk9mjlqXa1QqZWquXhlePaJzOlFF8XGOMZrARUAY+0QlDA0LyLQNAaYmjYX8zCYqlBBoBeERrXpCNeAwtZoizUs3z45LJX14Uznow4njU1ZhO6YvBT92FHnc+AF6V53si3tUUciUDublYj+vy6qeAZBbLTewKW5yMO4Uft1Csu5UI4zj953wQ7gSh5L5XvmshuMHodVRXXOaTuiLobVd0RGL6BVtOFW+c6z6KFMXU5g47BeF2CJHAQsNR5nlD6BreOwm88TX0XAFHgIpojoIAbYeP+lYZVqTCOjHkIFHR4cg/rzNp924kSwW5UnSdww9AG6l/eG7jYogxs6fHeG7fUIV6AR22cga3dyFmx7F2OMHGub6j9+DbhW5lIdm6tj4vpNwjvySboOaJCQeaBMQHCWZJ/c0B2js+VRI5PM0vpV9bhg2B4FGpEkAKYuOeQILPxhraEk1EoEvhqKBHw3AJgKtn5uvaW1bAOU99/uf/O/3/xjRqAPEHJMnJ+jzQYXbD4=
-        app: web_poker
-        on:
-            repo: tom-pollak/web_poker
-
-            services:
-                - docker
-
-            env:
-                DOCKER_COMPOSE_VERSION: 1.25.5
-
+  provider: heroku
+  script:
+  - heroku container:push web
+  - heroku container:release web
+  after_script:
+  - docker-compose down
+  api_key:
+    secure: ARUniQtTLsKVVrx0zDQ4Yk1O0F9zXjiP/2WpBE0ysDJsjyzPDo1skGYutZV8J0W5gEotTHCyfwBTex7X6nm7KPDDQCzFXwL8td7xsGhbrOHLIoNnHIoaEkWzmK0k/IUQrokPMpgLv0SIJ35byhB80tYhhcrYm+OnDgaKbXf6Xk3BF5NKMTSnpJx3trCuyV1agU7D6+o9j9g1N7KvA6mJ9J5ggMn6YdF6ZQa8reqVX9VNCadsHw/ixO9yHT2+k+xOb9GLd2gav0Bp6zbnvsRoydFO1dO8dAnATfaeJYy1CILbD3IEYL9eKNdi8b3i6qwl66P8pj/1L+Dfv8o+JD8uns7vkSTjAdp5WGLsu4FqKaRwEGXBC/8f6VuW3XYzhop1/Kj2Ng6k+e8q9GH+2rFCF7NGXWf3xV1bSEcqL/6NRvICQykB3H/NKsbtdUA++qjM+4y4wle2xb14B/yVV3/BCtwH1whRbAPVsMb2p+BnbJKSQ0rhRDcaP9oReylL9T+Gs6IUfv1u/0FT+FBLhWWRPTO3BL/DTOhu1Q2sWrc1dQtHBIs6Wg1vDwUo9vrin1cp4RVPVf4dhNBGpuf1+0g/LwS10OBa1KH1uG6K+lr6wkTrgWl7I/s6PFpIdFWPL5a1lxzUwa2+KUG0aN/EbJDz+on56dMgW4AUt1LaYPxI1k8=
 before_install:
-    - sudo rm /usr/local/bin/docker-compose
-    - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-    - chmod +x docker-compose
-    - sudo mv docker-compose /usr/local/bin
-
+- sudo rm /usr/local/bin/docker-compose
+- curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname
+  -s`-`uname -m` > docker-compose
+- chmod +x docker-compose
+- sudo mv docker-compose /usr/local/bin
 before_script:
-    - docker-compose up -d --build
-
-script:
-    echo "no test"
-    #- docker-compose exec users python manage.py test
+- docker-compose up -d --build
+script: echo "no test"
