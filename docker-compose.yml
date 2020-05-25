@@ -9,7 +9,8 @@ services:
         volumes:
             - .:/code
         ports:
-            - "8000":$PORT
+            - target: 8000
+              published: $PORT
         depends_on:
             - db
             - redis_db
