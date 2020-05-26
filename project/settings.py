@@ -22,12 +22,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'd938i2060c)_!q16$fg6@*+@4tbuzd&cc5cqg-4hi^%p@q$feh'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
+
+SECRET_KEY = os.environ.get('SECRET_KEY' 'qwerty123')
 
 #DEBUG = os.environ.get('DEBUG', 0)
 DEBUG = True
@@ -36,6 +37,7 @@ ALLOWED_HOSTS = [
     #'*',
     'localhost',
     '*.pollakpoker.live'
+    'pollakpoker.herokuapp.com'
 ]
 
 
@@ -110,6 +112,11 @@ db_from_env = dj_database_url.config(
 #print(db_from_env)
 DATABASES['default'] = db_from_env
 
+if os.path.isfile(dotenv_file):
+    del DATABASES['default']['OPTIONS']['sslmode']
+else:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -133,9 +140,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en-gb'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'GMT'
 
 USE_I18N = True
 
@@ -166,12 +173,5 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
     'PAGINATE_BY': 10
 }
-# DOCKER_HOST = '192.168.99.100:2376'
-
 
 django_heroku.settings(locals())
-if os.path.isfile(dotenv_file):
-    del DATABASES['default']['OPTIONS']['sslmode']
-else:
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = True

@@ -11,13 +11,16 @@ services:
         ports:
             - target: 8000
               published: $PORT
+
         depends_on:
             - db
             - redis_db
+
     redis_db:
         image: "redis:5"
         ports:
             - "6379:6379"
+
     db:
         image: "postgres:12-alpine"
         ports:
@@ -25,4 +28,4 @@ services:
         environment:
             - POSTGRES_DB=db
             - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=localdjango
+            - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
