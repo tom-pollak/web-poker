@@ -112,11 +112,11 @@ db_from_env = dj_database_url.config(
 #print(db_from_env)
 DATABASES['default'] = db_from_env
 
-if os.path.isfile(dotenv_file):
-    del DATABASES['default']['OPTIONS']['sslmode']
-else:
+if os.environ.get('PRODUCTION' 'False') == 'True':
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
+else:
+    del DATABASES['default']['OPTIONS']['sslmode']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
