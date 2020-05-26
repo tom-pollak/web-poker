@@ -15,6 +15,7 @@ import threading
 
 class MoneyConsumer(WebsocketConsumer):
     def connect(self):
+        print('connecting')
         self.accept()
         self.username = self.scope['url_route']['kwargs']['username']
         self.player = CustomUser.objects.get(username=self.username)

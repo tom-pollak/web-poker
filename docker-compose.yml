@@ -1,20 +1,26 @@
 version: "3.8"
 services:
     web:
-        build: .
+        build:
+            context: .
+            args:
+                - PORT=$PORT
         # command: python manage.py cleartables
-        command: daphne project.asgi:application --port 8000 --bind 0.0.0.0 
+        # command: daphne project.asgi:application --port 8000 --bind 0.0.0.0 
         # command: python manage.py runserver 0.0.0.0:8000
         # command: gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
         volumes:
             - .:/code
         ports:
-            - target: 8000
-              published: $PORT
+            - target: $PORT
+              published: 8000
 
-        #depends_on:
-        #- db
-        #- redis_db
+        depends_on:
+            - db
+            - redis_db
+
+        env_file: .env
+        restart: always
 
     redis_db:
         image: "redis:5"
@@ -22,11 +28,25 @@ services:
             - "6379:6379"
 
     db:
-        image: "postgres:12-alpine"
+        image: "mysql:8.0.20"
         ports:
-            - "5432"
-
+            - "3306:3306"
+        command: --default-authentication-plugin=mysql_native_password --skip-mysqlx
         environment:
-            - POSTGRES_DB=db
-            - POSTGRES_USER=postgres
-            - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+            MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD 
+
+    admin:    
+        image: adminer    
+        ports:      
+          - "8080:8080"
+
+
+#    db:
+#        image: "postgres:12-alpine"
+#        ports:
+#            - "5432"
+#
+#        environment:
+#            - POSTGRES_DB=db
+#            - POSTGRES_USER=postgres
+#            - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
