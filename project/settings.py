@@ -159,9 +159,6 @@ except Exception:
     print ('Unexpected error:', sys.exc_info())
 '''
 
-ASGI_THREADS = 5
-
-
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
