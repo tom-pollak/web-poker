@@ -73,6 +73,13 @@ class PokerConsumer(WebsocketConsumer):
                         'type': 'chatMessage',
                         'text': message
                     })
+                print('sending by self')
+                self.send(
+                        text_data=json.dumps({
+                            'type': 'chatMessage',
+                            'text': 'message'
+                            })
+                        )
 
         elif player.turn:
             player.turn = False
