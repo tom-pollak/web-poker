@@ -9,10 +9,3 @@ deploy:
   strategy: git
   api_key:
     secure: ARUniQtTLsKVVrx0zDQ4Yk1O0F9zXjiP/2WpBE0ysDJsjyzPDo1skGYutZV8J0W5gEotTHCyfwBTex7X6nm7KPDDQCzFXwL8td7xsGhbrOHLIoNnHIoaEkWzmK0k/IUQrokPMpgLv0SIJ35byhB80tYhhcrYm+OnDgaKbXf6Xk3BF5NKMTSnpJx3trCuyV1agU7D6+o9j9g1N7KvA6mJ9J5ggMn6YdF6ZQa8reqVX9VNCadsHw/ixO9yHT2+k+xOb9GLd2gav0Bp6zbnvsRoydFO1dO8dAnATfaeJYy1CILbD3IEYL9eKNdi8b3i6qwl66P8pj/1L+Dfv8o+JD8uns7vkSTjAdp5WGLsu4FqKaRwEGXBC/8f6VuW3XYzhop1/Kj2Ng6k+e8q9GH+2rFCF7NGXWf3xV1bSEcqL/6NRvICQykB3H/NKsbtdUA++qjM+4y4wle2xb14B/yVV3/BCtwH1whRbAPVsMb2p+BnbJKSQ0rhRDcaP9oReylL9T+Gs6IUfv1u/0FT+FBLhWWRPTO3BL/DTOhu1Q2sWrc1dQtHBIs6Wg1vDwUo9vrin1cp4RVPVf4dhNBGpuf1+0g/LwS10OBa1KH1uG6K+lr6wkTrgWl7I/s6PFpIdFWPL5a1lxzUwa2+KUG0aN/EbJDz+on56dMgW4AUt1LaYPxI1k8=
-
-before_install:
-    - sudo rm /usr/local/bin/docker-compose
-    - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-    - chmod +x docker-compose
-    - sudo mv docker-compose /usr/local/bin
-
