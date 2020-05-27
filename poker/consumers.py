@@ -66,6 +66,7 @@ class PokerConsumer(WebsocketConsumer):
                 message = self.username + ': ' + message
                 # message = censor(message, self.censoredList)
 
+                print('sending message')
                 async_to_sync(self.channel_layer.group_send)(
                     self.tableGroup,
                     {

@@ -73,6 +73,7 @@
     '/ws/tables/' + pk + '/');
 
   pokerSocket.onmessage = function(e) {
+	console.log('recieved message')
     var data = JSON.parse(e.data);
     var message = data['message'];
     if (message === 'It\'s your turn') {
