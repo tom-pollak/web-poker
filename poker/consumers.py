@@ -1,16 +1,14 @@
-from asgiref.sync import async_to_sync
-from channels.generic.websocket import WebsocketConsumer
+from channels.generic.websocket import AsyncWebsocketConsumer
 from .models import Players, Room
 from accounts.models import CustomUser
 from tables.models import Table
 import json
-from django.db import close_old_connections
 
 
-class PokerConsumer(WebsocketConsumer):
+class PokerConsumer(AsyncWebsocketConsumer):
     # adds the player to the poker group to recieve the community cards and bets
     # adds the player to a unique group to recieve his cards
-    def connect(self):
+    async def connect(self):
         self.pk = self.scope['url_route']['kwargs']['pk']
         self.player = self.scope['user']
         self.username = self.player.username
@@ -19,26 +17,26 @@ class PokerConsumer(WebsocketConsumer):
         self.room = Room.objects.get(table_id=self.pk)
         #self.censoredList = getCensoredWords()
         # group socket
-        async_to_sync(self.channel_layer.group_add)(
+        await self.channel_layer.group_add(
             self.tableGroup,
             self.channel_name
         )
 
         # unique socket
-        async_to_sync(self.channel_layer.group_add)(
+        await self.channel_layer.group_add(
             str(self.username),
             self.channel_name
         )
         # accepts all communication with web socket
-        self.accept()
+        await self.accept()
 
-    def disconnect(self, closeCode):
+    async def disconnect(self, closeCode):
         # disconnects from group sockets
-        async_to_sync(self.channel_layer.group_discard)(
+        await self.channel_layer.group_discard(
             self.tableGroup,
             self.channel_name
         )
-        async_to_sync(self.channel_layer.group_discard)(
+        await self.channel_layer.group_discard(
             str(self.username),
             self.channel_name
         )
@@ -53,9 +51,8 @@ class PokerConsumer(WebsocketConsumer):
         players = Players.objects.filter(room=self.room)
         if len(players) == 0:
             self.room.delete()
-        close_old_connections()
 
-    def receive(self, text_data):
+    async def receive(self, text_data):
         print('recived message')
         player = Players.objects.get(user=self.player)
         textDataJson = json.loads(text_data)
@@ -68,7 +65,7 @@ class PokerConsumer(WebsocketConsumer):
 
                 print('sending message')
                 print('message:', message)
-                async_to_sync(self.channel_layer.group_send)(
+                await self.channel_layer.group_send(
                     self.tableGroup,
                     {
                         'type': 'chatMessage',
@@ -94,30 +91,30 @@ class PokerConsumer(WebsocketConsumer):
             self.room.save()
             player.save()
 
-    def pokerMessage(self, event):
+    async def pokerMessage(self, event):
         message = event['message']
         pot = event['pot']
 
-        self.send(text_data=json.dumps({
+        await self.send(text_data=json.dumps({
             'message': message,
             'pot': pot,
         }))
 
-    def playerTurn(self, event):
+    async def playerTurn(self, event):
         message = 'It\'s your turn'
         putIn = event['putIn']
-        self.send(text_data=json.dumps({
+        await self.send(text_data=json.dumps({
             'message': message,
             'putIn': putIn
         }))
 
-    def cards(self, event):
+    async def cards(self, event):
         message = 'cards'
         hand = event['hand']
         comCards = event['comCards']
         dealer = event['dealer']
         moneyInTable = event['moneyInTable']
-        self.send(text_data=json.dumps({
+        await self.send(text_data=json.dumps({
             'message': message,
             'hand': hand,
             'comCards': comCards,
@@ -125,20 +122,20 @@ class PokerConsumer(WebsocketConsumer):
             'moneyInTable': moneyInTable
         }))
 
-    def showWinner(self, event):
+    async def showWinner(self, event):
         message = 'winner'
         winner = event['winner']
         showdown = event['showdown']
         log = winner + ' wins'
-        self.send(text_data=json.dumps({
+        await self.send(text_data=json.dumps({
             'message': message,
             'showdown': showdown,
             'log': log
         }))
 
-    def chatMessage(self, event):
+    async def chatMessage(self, event):
         text = event['text']
-        self.send(text_data=json.dumps({
+        await self.send(text_data=json.dumps({
             'message': 'message',
             'text': text
         }))
