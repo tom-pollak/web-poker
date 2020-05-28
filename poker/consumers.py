@@ -62,6 +62,7 @@ class PokerConsumer(WebsocketConsumer):
         action = textDataJson['action']
         if action == 'message':
             message = textDataJson['message']
+            print('message:', message)
             if message != '':
                 message = self.username + ': ' + message
                 # message = censor(message, self.censoredList)
