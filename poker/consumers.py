@@ -62,25 +62,18 @@ class PokerConsumer(WebsocketConsumer):
         action = textDataJson['action']
         if action == 'message':
             message = textDataJson['message']
-            print('message:', message)
             if message != '':
                 message = self.username + ': ' + message
                 # message = censor(message, self.censoredList)
 
                 print('sending message')
+                print('message:', message)
                 async_to_sync(self.channel_layer.group_send)(
                     self.tableGroup,
                     {
                         'type': 'chatMessage',
                         'text': message
                     })
-                print('sending by self')
-                self.send(
-                        text_data=json.dumps({
-                            'type': 'chatMessage',
-                            'text': 'message'
-                            })
-                        )
 
         elif player.turn:
             player.turn = False
