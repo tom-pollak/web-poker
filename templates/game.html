@@ -68,9 +68,12 @@
   var pk = {{ table.pk }};
   hideButton('buttons')
 
+  console.log(ws_scheme)
+  var ws_scheme = window.location.protocol == 'https:' ? 'wss' : 'ws';
   var pokerSocket = new WebSocket(
     ws_scheme + '://' + window.location.host +
     '/ws/tables/' + pk + '/');
+  console.log(pokerSocket)
 
   pokerSocket.onmessage = function(e) {
 	console.log('recieved message')
