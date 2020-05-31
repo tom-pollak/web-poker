@@ -3,6 +3,7 @@ from .models import Players, Room
 from accounts.models import CustomUser
 from tables.models import Table
 import json
+from channels.db import database_sync_to_async
 
 
 class PokerConsumer(AsyncWebsocketConsumer):
@@ -14,7 +15,7 @@ class PokerConsumer(AsyncWebsocketConsumer):
         self.username = self.player.username
         print('player:', self.username)
         self.tableGroup = 'table_' + self.pk
-        self.room = Room.objects.get(table_id=self.pk)
+        self.room = await self.get_room()
         #self.censoredList = getCensoredWords()
         # group socket
         await self.channel_layer.group_add(
@@ -41,20 +42,20 @@ class PokerConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
         # update player money
-        playerInstance = Players.objects.get(user=self.player)
+        playerInstance = await self.get_player()
         self.player.money += playerInstance.moneyInTable
         self.player.save()
         playerInstance.delete()
 
         # if noone left in table delete table
         self.room.refresh_from_db()
-        players = Players.objects.filter(room=self.room)
+        players = await self.get_players_in_room()
         if len(players) == 0:
             self.room.delete()
 
     async def receive(self, text_data):
         print('recived message')
-        player = Players.objects.get(user=self.player)
+        player = self.get_players_in_room()
         textDataJson = json.loads(text_data)
         action = textDataJson['action']
         if action == 'message':
@@ -140,6 +141,17 @@ class PokerConsumer(AsyncWebsocketConsumer):
             'text': text
         }))
 
+    @database_sync_to_async
+    def get_room(self):
+        return Room.objects.get(table_id=self.pk)
+
+    @database_sync_to_async
+    def get_player(self):
+        Players.objects.get(user=self.player)
+    
+    @database_sync_to_async
+    def get_players_in_room(self):
+        Players.objects.filter(room=self.room)
 
 def getCensoredWords():
     censoredList = []
