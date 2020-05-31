@@ -69,7 +69,7 @@ class PokerConsumer(AsyncWebsocketConsumer):
                 await self.channel_layer.group_send(
                     self.tableGroup,
                     {
-                        'type': 'chatMessage',
+                        'type': 'chat.message',
                         'text': message
                     })
 
@@ -134,7 +134,7 @@ class PokerConsumer(AsyncWebsocketConsumer):
             'log': log
         }))
 
-    async def chatMessage(self, event):
+    async def chat_message(self, event):
         text = event['text']
         print('sending message...')
         await self.send(text_data=json.dumps({
