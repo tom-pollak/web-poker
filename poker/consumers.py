@@ -136,10 +136,12 @@ class PokerConsumer(AsyncWebsocketConsumer):
 
     async def chatMessage(self, event):
         text = event['text']
+        print('sending message...')
         await self.send(text_data=json.dumps({
             'message': 'message',
             'text': text
         }))
+        print('sent')
 
     @database_sync_to_async
     def get_room(self):
