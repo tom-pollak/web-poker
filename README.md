@@ -5,7 +5,18 @@ Check out the website here: [pollakpoker.live](https://www.pollakpoker.live)
 
 Prerequisites: Docker, Docker Compose
 
-run locally
+to run locally:
 ```
-docker-compose up
+docker-compose exec db psql -U postgres
+```
+inside db shell:
+```
+create database webpoker;
+\q
+```
+then
+```
+docker-compose exec web python manage.py migrate
+docker-compose up --build
+
 ```
