@@ -1,7 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from poker.models import Players
-from datetime import datetime
 
 
 class Table(models.Model):

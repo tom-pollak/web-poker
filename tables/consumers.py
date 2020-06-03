@@ -1,10 +1,8 @@
-from django.core import serializers
 from channels.generic.websocket import WebsocketConsumer
 from accounts.models import CustomUser
 from .models import Table
 from .serializers import TableSerializer
 from rest_framework.renderers import JSONRenderer
-from rest_framework.parsers import JSONParser
 import time
 from poker.consumers import Players
 from django.db import close_old_connections
