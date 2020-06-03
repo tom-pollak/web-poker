@@ -5,7 +5,7 @@ Check out the website here: [pollakpoker.live](https://www.pollakpoker.live)
 
 Prerequisites: Docker, Docker Compose
 
-run locally
+to run locally:
 ```
 docker-compose exec db psql -U postgres
 ```
