@@ -1,11 +1,13 @@
 os: osx
 language: python
-python:
-- '3.8'
+  python:
+    - '3.8'
+
 deploy:
   provider: heroku
+  api_key:
+    secure: i5jGCLB97wP6+jEOkYna6ia36XYhxq4WO/j7z9z3onrdH/PaKc8y6m6HcSqQ8iXHJRY2DODcer2E9MNnyjeK4kMvYKLYA91TL/EVDy4TJtcHdKmYItwPKNxk2BrJAbPWS6B1nac08yRp//fTZTJVruRv6mpucYYlTbZVcHfJgIVMT0mVtA107TknAOoGhjbv8+FLsckfaApY2FEelMT8sIiKX0xIceg9B+AD/co10UeYRowBLA+7STZWwnr6TrYuHU65zOinuOk09BxGSt1+W8E6fN2/f2R+88ebveq2tvNfISZQ8GkCck3uPEYwvID7VA7pwCMGsae+Ck86ZhYMyNnSQSZkgYhtvd2Cb6EbDMZzt7MEtqwsBigmPZOF8q6lzpEws4oFY9kYgiML3zkLjQtpb3r06i7I2Bxzi2gqMeJGL1pdM+n/pJIIFmN1PdlchZZ8s5ElkGDVNVF6G3vDmm8m5+ySualo1eUyqt/tQArcvU0T8JVaPOGSE7HMHLE2Mj6SRRX7YXTj192F8tjIW9w7Sy5zQ5Re+Za6DsX7RYEQOQEOQGj1b+Hc2PY1XSbI9zImgSNqfgyFyweb42Peu1EtDtpRGVAY2zec4OwS+wFqvoWkqbG3Zt3peGgUMN7CvuiGuCkqq4nvq/dfntD/hlkk4raFtax3Jt8QbLA8EzU=
   app: pollakpoker
   on:
     repo: tom-pollak/web_poker
-  api_key:
-    secure: u/jfSWaAJ0GHQv++jxfTLrjc5xm3dRucsHvtx0/lfh5ARxldX/kwifUUoy0gTfd4Qz4XMf4P3rbJ1ifpKmQOdSLx1PEclY4SrAUKEV5Yg8pWPTk6g4L4BJxuFZ7+DfizxySj4+VvMO9MKPib4JDG28MzOLJjwZ83Sc6ecKRQdjJEVA8wW21oaJj/LAVT47+rQYTjn110LFzzp1iej7gR0omMjRSOGwFVd6B4ioLfhD+nSmGVz/tjoEfdU6XSjsmccyG0z/RrqgNRxVpHxMW8wtC3kPpslTOVsJWsLpk2iqlVgvCF9vPZrVAzn9H/74bKsC1fQgL1akhuSVEmtSBM5NR11awVhG2fyKJDQZbnWfHQVKQnFxjC04Td/D1FSqzVx5s/I+TJIdWmcCDmaT+mfwls570qE341vSXb3b6IYLngZbsOo5B37ld+azIBtxLFPC0Jbr+NeOinvYiQ0aQR0J+MKN2okd8mzK1n8Ve9qDi8j2y/owcybps9eWj1/Ggw5MVSL3dOsBow0fovt4CYIwDqsc8WI09C0Lp9FXMAm1wZj8ZLjVmHF6iVF9XULRfycFV/00oU/3YGVkun3ltibODMHVScWhNF6MGOVULDgC7gKt3pmkhwhvHFSZqOyi88R0VfwOjSC+Ga5t7Ww9fmxmEX57uraRQulymS7ovnhbs=
+    skip_cleanup: 'true'
