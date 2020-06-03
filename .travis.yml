@@ -1,7 +1,10 @@
 os: osx
 language: python
 python:
-  - '3.8'
+  - 3.8
+
+install:
+  - pip install -r requirements.txt
 
 deploy:
   provider: heroku
@@ -10,3 +13,4 @@ deploy:
   app: pollakpoker
   on:
     repo: tom-pollak/web_poker
+  skip_cleanup: true
