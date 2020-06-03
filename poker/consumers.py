@@ -137,6 +137,7 @@ class PokerConsumer(WebsocketConsumer):
         }))
 
     def chatMessage(self, event):
+        print('to chatMessage')
         text = event['text']
         self.send(text_data=json.dumps({
             'message': 'message',
