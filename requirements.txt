@@ -46,4 +46,5 @@ uvicorn==0.11.5
 uvloop==0.14.0
 websockets==8.1
 whitenoise==5.0.1
+yapf==0.30.0
 zope.interface==5.1.0

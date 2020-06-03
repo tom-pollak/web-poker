@@ -31,11 +31,9 @@ if os.path.isfile(dotenv_file):
 
 SECRET_KEY = os.environ.get('SECRET_KEY' 'qwerty123')
 
-#DEBUG = os.environ.get('DEBUG', 0)
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 0)
 
 ALLOWED_HOSTS = [
-    #'*',
     'localhost',
     '*.pollakpoker.live'
     'pollakpoker.herokuapp.com'
@@ -106,58 +104,19 @@ CHANNEL_LAYERS = {
     },
 }
 
-
 DATABASES = {}
 DATABASE_URL = os.environ.get('DATABASE_URL')
 db_from_env = dj_database_url.config(
     default=DATABASE_URL, ssl_require=True)
+
 DATABASES['default'] = db_from_env
 
-if os.environ.get('PRODUCTION' 'False') == 'True':
-    print('PRODUCTION')
+if os.environ.get('PRODUCTION', 'False') == 'True':
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
-    del DATABASES['default']['CONN_MAX_AGE']
 else:
-    print('LOCAL')
     del DATABASES['default']['OPTIONS']['sslmode']
-print(db_from_env)
 
-
-'''
-# Register database schemes in URLs.
-uses_netloc.append('mysql')
-
-try:
-
-    # Check to make sure DATABASES is set in settings.py file.
-    # If not default to {}
-
-    if 'DATABASES' not in locals():
-        DATABASES = {}
-
-    if 'DATABASE_URL' in os.environ:
-        url = urlparse(os.environ['DATABASE_URL'])
-
-        # Ensure default database exists.
-        DATABASES['default'] = DATABASES.get('default', {})
-
-        # Update with environment configuration.
-        DATABASES['default'].update({
-            'NAME': url.path[1:],
-            'USER': url.username,
-            'PASSWORD': url.password,
-            'HOST': url.hostname,
-            'PORT': url.port,
-        })
-
-
-        if url.scheme == 'mysql':
-            DATABASES['default']['ENGINE'] = 'mysql.connector.django'
-            # DATABASES['default']['ENGINE'] = 'django.db.backends.mysql'
-except Exception:
-    print ('Unexpected error:', sys.exc_info())
-'''
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -216,5 +175,3 @@ REST_FRAMEWORK = {
 }
 
 django_heroku.settings(locals())
-print(django_heroku.settings(locals()))
-del DATABASES['default']['OPTIONS']['sslmode']

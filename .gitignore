@@ -4,3 +4,5 @@ Pipfile*
 .env
 staticfiles/
 server.*
+.DS_Store
+.deepsource.toml
