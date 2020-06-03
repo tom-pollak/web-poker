@@ -10,4 +10,3 @@ deploy:
   app: pollakpoker
   on:
     repo: tom-pollak/web_poker
-    skip_cleanup: 'true'
