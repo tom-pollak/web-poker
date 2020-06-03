@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from tables.models import Table
-from poker.models import Room
 from django.contrib.auth.decorators import login_required
 from .forms import TableForm
 from django.db import close_old_connections

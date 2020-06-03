@@ -1,8 +1,6 @@
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from .models import Players, Room
-from accounts.models import CustomUser
-from tables.models import Table
 import json
 from django.db import close_old_connections
 
