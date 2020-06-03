@@ -1,3 +1,4 @@
+os: linux
 dist: xenial
 language: python
 python:
@@ -8,6 +9,7 @@ install:
 
 deploy:
   provider: heroku
+  strategy: git
   api_key:
     secure: i5jGCLB97wP6+jEOkYna6ia36XYhxq4WO/j7z9z3onrdH/PaKc8y6m6HcSqQ8iXHJRY2DODcer2E9MNnyjeK4kMvYKLYA91TL/EVDy4TJtcHdKmYItwPKNxk2BrJAbPWS6B1nac08yRp//fTZTJVruRv6mpucYYlTbZVcHfJgIVMT0mVtA107TknAOoGhjbv8+FLsckfaApY2FEelMT8sIiKX0xIceg9B+AD/co10UeYRowBLA+7STZWwnr6TrYuHU65zOinuOk09BxGSt1+W8E6fN2/f2R+88ebveq2tvNfISZQ8GkCck3uPEYwvID7VA7pwCMGsae+Ck86ZhYMyNnSQSZkgYhtvd2Cb6EbDMZzt7MEtqwsBigmPZOF8q6lzpEws4oFY9kYgiML3zkLjQtpb3r06i7I2Bxzi2gqMeJGL1pdM+n/pJIIFmN1PdlchZZ8s5ElkGDVNVF6G3vDmm8m5+ySualo1eUyqt/tQArcvU0T8JVaPOGSE7HMHLE2Mj6SRRX7YXTj192F8tjIW9w7Sy5zQ5Re+Za6DsX7RYEQOQEOQGj1b+Hc2PY1XSbI9zImgSNqfgyFyweb42Peu1EtDtpRGVAY2zec4OwS+wFqvoWkqbG3Zt3peGgUMN7CvuiGuCkqq4nvq/dfntD/hlkk4raFtax3Jt8QbLA8EzU=
   app: pollakpoker
