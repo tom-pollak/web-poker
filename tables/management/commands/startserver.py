@@ -1,10 +1,6 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 import threading
 from django.core.management import call_command
-from tables.models import Table
-from datetime import datetime, timezone
-import time
-import os
 
 class Command(BaseCommand):
     help = 'Calls runserver and cleartables, creates and a daemon thread that removes tables that have been \

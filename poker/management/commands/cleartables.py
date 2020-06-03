@@ -1,8 +1,5 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from poker.models import Players, Room
-from tables.models import Table
-import time
-from datetime import datetime, timezone, date
 
 
 class Command(BaseCommand):
