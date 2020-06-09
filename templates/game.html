@@ -69,7 +69,7 @@
   hideButton('buttons')
 
   var ws_scheme = window.location.protocol == 'https:' ? 'wss' : 'ws';
-  var pokerSocket = new WebSocket(
+  var pokerSocket = new ReconnectingWebSocket(
     ws_scheme + '://' + window.location.host +
     '/ws/tables/' + pk + '/');
 

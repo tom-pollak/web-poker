@@ -21,11 +21,15 @@
 	/>
 </head>
 {% load tags %}
-<!-- {% load static %} -->
+{% load static %}
+<script charset="utf-8" src="{% static 'reconnecting-web-socket.js' %}">
+</script>
 
-{% url 'index' as index %} {% url 'leaderboard' as leaderboard %} {% url
-'profile' username=user.username as profile %} {% url 'pokerRules' as pokerRules
-%}
+
+{% url 'index' as index %}
+{% url 'leaderboard' as leaderboard %}
+{% url 'profile' username=user.username as profile %}
+{% url 'pokerRules' as pokerRules %}
 
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
 	<div class="container-fluid">
@@ -54,7 +58,7 @@
 <script>
 	{% if user.is_authenticated %}
 	  var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
-	  var webSocket = new WebSocket(
+	  var webSocket = new ReconnectingWebSocket(
 	    ws_scheme + '://' + window.location.host + '/ws/user/' + '{{ user.get_username }}' + '/');
 	  webSocket.binaryType = 'arraybuffer';
 
@@ -70,13 +74,13 @@
 	{% endif %}
 </script>
 
-{% block pageContent %}{% endblock %} {% if not user.is_authenticated %}
-<p class="ml-4">You are not logged in</p>
-<a class="ml-4" href="{% url 'login' %}">login</a>
-<a href="{% url 'signup' %}">signup</a>
-
+{% block pageContent %}{% endblock %} 
+{% if not user.is_authenticated %}
+	<p class="ml-4">You are not logged in</p>
+	<a class="ml-4" href="{% url 'login' %}">login</a>
+	<a href="{% url 'signup' %}">signup</a>
 {% else %}
-<p><a class="ml-4" href="{% url 'logout' %}">logout</a></p>
+	<p><a class="ml-4" href="{% url 'logout' %}">logout</a></p>
 {% endif %}
 
 <!--javascript to help it function-->
