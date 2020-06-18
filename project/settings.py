@@ -104,6 +104,8 @@ if os.environ.get('PRODUCTION', 'False') == 'True':
     print('PRODUCTION')
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
+else:
+    del DATABASES['default']['OPTIONS']['sslmode']
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
@@ -162,5 +164,3 @@ REST_FRAMEWORK = {
 }
 
 django_heroku.settings(locals())
-if os.environ.get('PRODUCTION', 'False') == 'False':
-    del DATABASES['default']['OPTIONS']['sslmode']
