@@ -5,9 +5,10 @@ python:
   - 3.8
 
 script:
-  - echo "PORT=8000" > .env
-  - docker-compose --build
-  - docker-compose exec web python manage.py test
+  - docker-compose up --build -d
+  - docker-compose exec db psql -U postgres -c "CREATE DATABASE webpoker"
+  - docker-compose exec web python manage.py migrate
+  - docker-compose down
 
 deploy:
   provider: heroku

@@ -169,5 +169,5 @@ REST_FRAMEWORK = {
 }
 
 django_heroku.settings(locals())
-if os.environ.get('PRODUCTION', 'NULL') == 'False':
+if os.environ.get('PRODUCTION', 'False') == 'False':
     del DATABASES['default']['OPTIONS']['sslmode']

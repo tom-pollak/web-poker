@@ -1,7 +1,6 @@
 db.sqlite3
 package*.json
 Pipfile*
-.env
 staticfiles/
 server.*
 .DS_Store
