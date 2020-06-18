@@ -27,7 +27,7 @@ dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
 
-SECRET_KEY = os.environ.get('SECRET_KEY' 'qwerty123')
+SECRET_KEY = os.environ.get('SECRET_KEY', 'qwerty123')
 
 DEBUG = os.environ.get('DEBUG', 0)
 
@@ -169,5 +169,5 @@ REST_FRAMEWORK = {
 }
 
 django_heroku.settings(locals())
-if os.environ.get('PRODUCTION', 'False') == 'False':
+if os.environ.get('PRODUCTION', 'NULL') == 'False':
     del DATABASES['default']['OPTIONS']['sslmode']
