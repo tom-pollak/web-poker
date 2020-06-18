@@ -7,16 +7,7 @@ Prerequisites: Docker, Docker Compose
 
 to run locally:
 ```
-docker-compose exec db psql -U postgres
-```
-inside db shell:
-```
-create database webpoker;
-\q
-```
-then
-```
-docker-compose exec web python manage.py migrate
+echo "PORT=8000" > .env
+docker-compose exec python manage.py migrate
 docker-compose up --build
-
 ```
