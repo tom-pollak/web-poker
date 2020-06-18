@@ -5,7 +5,7 @@ python:
   - 3.8
 
 script:
-  - echo "no tests!"
+  - python manage.py test
 
 deploy:
   provider: heroku
