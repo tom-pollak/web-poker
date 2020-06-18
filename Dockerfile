@@ -12,8 +12,6 @@ RUN pip install -r requirements.txt
 COPY . /code/
 
 ARG PORT
-#CMD python manage.py runserver 0.0.0.0:80
-#CMD gunicorn project.asgi:application -k uvicorn.workers.UvicornWorker
 CMD python manage.py cleartables
 CMD python manage.py collectstatic
 CMD daphne project.asgi:application --port $PORT --bind 0.0.0.0 

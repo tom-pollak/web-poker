@@ -5,7 +5,8 @@ python:
   - 3.8
 
 script:
-  - python manage.py test
+  - docker-compose --build
+  - docker-compose exec web python manage.py test
 
 deploy:
   provider: heroku

@@ -31,12 +31,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY' 'qwerty123')
 
 DEBUG = os.environ.get('DEBUG', 0)
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '*.pollakpoker.live'
-    'pollakpoker.herokuapp.com'
-]
-
+ALLOWED_HOSTS = ['localhost', '*.pollakpoker.live' 'pollakpoker.herokuapp.com']
 
 # Application definition
 
@@ -87,10 +82,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'project.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
 
 ASGI_APPLICATION = 'project.routing.application'
 CHANNEL_LAYERS = {
@@ -102,10 +95,14 @@ CHANNEL_LAYERS = {
     },
 }
 
-DATABASES = {}
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 DATABASE_URL = os.environ.get('DATABASE_URL')
-db_from_env = dj_database_url.config(
-    default=DATABASE_URL, ssl_require=True)
+db_from_env = dj_database_url.config(default=DATABASE_URL, ssl_require=True)
 
 DATABASES['default'] = db_from_env
 
@@ -113,25 +110,27 @@ if os.environ.get('PRODUCTION', 'False') == 'True':
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
 
-
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -146,15 +145,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'), )
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
@@ -166,7 +162,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser', ),
     'PAGINATE_BY': 10
 }
 
