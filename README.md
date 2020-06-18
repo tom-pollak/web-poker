@@ -8,6 +8,6 @@ Prerequisites: Docker, Docker Compose
 to run locally:
 ```
 echo "PORT=8000" > .env
+docker-compose exec web python manage.py migrate
 docker-compose up --build -d
-docker-compose exec python manage.py migrate
 ```
