@@ -95,20 +95,13 @@ CHANNEL_LAYERS = {
     },
 }
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
-if os.path.isfile(dotenv_file):
-    DATABASE_URL = os.environ.get('DATABASE_URL')
-    db_from_env = dj_database_url.config(default=DATABASE_URL,
-                                         ssl_require=True)
-    DATABASES['default'] = db_from_env
+DATABASES = {}
+DATABASE_URL = os.environ.get('DATABASE_URL')
+db_from_env = dj_database_url.config(default=DATABASE_URL, ssl_require=True)
+DATABASES['default'] = db_from_env
 
 if os.environ.get('PRODUCTION', 'False') == 'True':
+    print('PRODUCTION')
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
 
