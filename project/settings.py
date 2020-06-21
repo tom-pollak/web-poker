@@ -25,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # SECURITY WARNING: don't run with debug turned on in production!
 dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
-	dotenv.load_dotenv(dotenv_file)
+    dotenv.load_dotenv(dotenv_file)
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'qwerty123')
 
@@ -101,16 +101,9 @@ db_from_env = dj_database_url.config(default=DATABASE_URL, ssl_require=True)
 DATABASES['default'] = db_from_env
 
 if os.environ.get('PRODUCTION', 'False') == 'True':
-<<<<<<< HEAD
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     del DATABASES['default']['OPTIONS']['sslmode']
-=======
-	print('PRODUCTION')
-	SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-	SECURE_SSL_REDIRECT = True
-	del DATABASES['default']['OPTIONS']['sslmode']
->>>>>>> ca08c647fb6800edb775b3ffab77edb512b1cce8
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
