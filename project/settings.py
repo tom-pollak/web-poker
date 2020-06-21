@@ -101,7 +101,6 @@ db_from_env = dj_database_url.config(default=DATABASE_URL, ssl_require=True)
 DATABASES['default'] = db_from_env
 
 if os.environ.get('PRODUCTION', 'False') == 'True':
-    print('PRODUCTION')
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     del DATABASES['default']['OPTIONS']['sslmode']
