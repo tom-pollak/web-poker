@@ -12,34 +12,25 @@ class PokerConsumer(WebsocketConsumer):
         self.pk = self.scope['url_route']['kwargs']['pk']
         self.player = self.scope['user']
         self.username = self.player.username
-        print('player:', self.username)
         self.tableGroup = 'table_' + self.pk
         self.room = Room.objects.get(table_id=self.pk)
         #self.censoredList = getCensoredWords()
         # group socket
-        async_to_sync(self.channel_layer.group_add)(
-            self.tableGroup,
-            self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_add)(self.tableGroup,
+                                                    self.channel_name)
 
         # unique socket
-        async_to_sync(self.channel_layer.group_add)(
-            str(self.username),
-            self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_add)(str(self.username),
+                                                    self.channel_name)
         # accepts all communication with web socket
         self.accept()
 
     def disconnect(self, closeCode):
         # disconnects from group sockets
-        async_to_sync(self.channel_layer.group_discard)(
-            self.tableGroup,
-            self.channel_name
-        )
-        async_to_sync(self.channel_layer.group_discard)(
-            str(self.username),
-            self.channel_name
-        )
+        async_to_sync(self.channel_layer.group_discard)(self.tableGroup,
+                                                        self.channel_name)
+        async_to_sync(self.channel_layer.group_discard)(str(self.username),
+                                                        self.channel_name)
         # update player money
         playerInstance = Players.objects.get(user=self.player)
         self.player.money += playerInstance.moneyInTable
@@ -67,10 +58,8 @@ class PokerConsumer(WebsocketConsumer):
                 print('sending message')
                 print('message:', message)
                 async_to_sync(self.channel_layer.group_send)(
-                    self.tableGroup,
-                    {
-                        'type': 'chatMessage',
-                        'text': message
+                    self.tableGroup, {
+                        'type': 'chatMessage', 'text': message
                     })
 
         elif player.turn:
@@ -104,10 +93,7 @@ class PokerConsumer(WebsocketConsumer):
     def playerTurn(self, event):
         message = 'It\'s your turn'
         putIn = event['putIn']
-        self.send(text_data=json.dumps({
-            'message': message,
-            'putIn': putIn
-        }))
+        self.send(text_data=json.dumps({'message': message, 'putIn': putIn}))
 
     def cards(self, event):
         message = 'cards'
@@ -129,18 +115,13 @@ class PokerConsumer(WebsocketConsumer):
         showdown = event['showdown']
         log = winner + ' wins'
         self.send(text_data=json.dumps({
-            'message': message,
-            'showdown': showdown,
-            'log': log
+            'message': message, 'showdown': showdown, 'log': log
         }))
 
     def chatMessage(self, event):
         print('to chatMessage')
         text = event['text']
-        self.send(text_data=json.dumps({
-            'message': 'message',
-            'text': text
-        }))
+        self.send(text_data=json.dumps({'message': 'message', 'text': text}))
 
 
 def getCensoredWords():
