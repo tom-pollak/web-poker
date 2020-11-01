@@ -16,7 +16,6 @@ services:
             - redis_db
 
         env_file: .env
-        restart: always
 
     redis_db:
         image: "redis:5"
