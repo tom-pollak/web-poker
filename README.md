@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.com/tom-pollak/web_poker.svg?branch=master)](https://travis-ci.com/tom-pollak/web_poker)
-# web_poker
+# Web Poker
 ### poker web-app written in django
 
 Check out the website here: [pollakpoker.live](https://www.pollakpoker.live)
