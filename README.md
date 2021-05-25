@@ -2,7 +2,7 @@
 # Web Poker
 ### poker web-app written in django
 
-Check out the website here: [pollakpoker.live](https://www.pollakpoker.live)
+Check out the website here: [pollakpoker.live](https://pollakpoker.herokuapp.com/)
 
 Prerequisites: Docker, Docker Compose
 
