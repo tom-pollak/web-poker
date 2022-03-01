@@ -42,7 +42,7 @@ twisted==22.1.0
 txaio==18.8.1
 uvicorn==0.11.7
 uvloop==0.14.0
-websockets==8.1
+websockets==9.1
 whitenoise==5.0.1
 yapf==0.30.0
 zope.interface==5.1.0
