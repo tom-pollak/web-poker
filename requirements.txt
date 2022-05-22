@@ -1,6 +1,6 @@
 -i https://pypi.org/simple
 aioredis==1.3.0
-asgiref==3.2.2
+asgiref==3.4.0
 asn1crypto==1.2.0
 async-timeout==3.0.1
 attrs==19.3.0
@@ -23,12 +23,12 @@ djangorestframework==3.11.2
 gunicorn==20.0.4
 h11==0.9.0
 hiredis==1.0.0
-httptools==0.1.1
+httptools==0.4.0
 hyperlink==19.0.0
 idna==2.8
 incremental==17.5.0
 msgpack==0.6.2
-protobuf==3.15.0
+protobuf==3.20.0
 psycopg2==2.8.5
 pycparser==2.19
 pyhamcrest==1.9.0
@@ -40,7 +40,7 @@ six==1.12.0
 sqlparse==0.3.0
 twisted==22.1.0
 txaio==18.8.1
-uvicorn==0.11.7
+uvicorn==0.17.6
 uvloop==0.14.0
 websockets==9.1
 whitenoise==5.0.1

@@ -10,11 +10,9 @@ services:
         ports:
             - target: $PORT
               published: 8000
-
         depends_on:
             - db
             - redis_db
-
         env_file: .env
 
     redis_db:
@@ -25,8 +23,9 @@ services:
         image: "postgres:12-alpine"
         ports:
             - "5432"
-
         environment:
             - POSTGRES_DB=db
             - POSTGRES_USER=postgres
             - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+        volumes:
+          - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
